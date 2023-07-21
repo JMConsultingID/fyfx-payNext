@@ -371,7 +371,8 @@ function woocommerce_paynext_init()
             } else {
                 $billing_creditcard_paynext = isset($_REQUEST['billing_creditcard_paynext']) ? esc_attr($_REQUEST['billing_creditcard_paynext']) : '';
 		?>
-       <div class="form-row form-row-wide validate-required hidden-form" style="margin:15px 0 0 0;">
+       <div class="payment_method_paynext-wrap hidden-form">
+       <div class="form-row form-row-wide validate-required" style="margin:15px 0 0 0;">
             <?php
                 $card_number_field_placeholder = __('Card Number', 'woocommerce');
 ?>            
@@ -412,6 +413,7 @@ function woocommerce_paynext_init()
         </div>
 
 <div class="clear"></div>
+</div>
         
         <?php
             }
