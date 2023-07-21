@@ -813,7 +813,7 @@ function woocommerce_paynext_init()
 				$billing_phone=$order->billing_phone;
 				if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
 				$paynext_args_array[] = '<input type="hidden" name="bill_country" value="' .$country. '"/>';
-                $paynext_args_array[] = '<input type="hidden" name="bill_zip" value="' . @$order->billing_postcode . '"/>';
+                $paynext_args_array[] = '<input type="hidden" name="bill_zip" value="0000"/>';
                 $paynext_args_array[] = '<input type="hidden" name="bill_phone" value="' . $billing_phone . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="id_order" value="' . $order_id . '"/>';
                
