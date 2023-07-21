@@ -1,0 +1,109 @@
+.paynext_description {}
+.payment_box.payment_method_paynext p {
+	margin: 10px 0 !important;
+	text-align: justify;
+}
+.payment_box.payment_method_paynext {
+	position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 1em;
+    margin: 1em 0;
+    font-size: .92em;
+    border-radius: 2px;
+    line-height: 1.5;
+    background-color: #dfdcde !important;
+    color: #515151;
+}
+	
+.payment_box.payment_method_paynext::before {
+    content: "";
+    display: block;
+    border: 1em solid #dfdcde;
+    border-right-color: transparent;
+    border-left-color: transparent;
+    border-top-color: transparent;
+    position: absolute;
+    top: -.75em;
+    left: 0;
+    margin: -1em 0 0 2em;
+}
+.payment_box.payment_method_paynext::after {
+	content: ' ';
+    display: table;
+}
+
+.exp-wrapper {
+  position: relative;
+  border: 1px solid #aaa;
+  display: flex;
+  width: 300px;
+  justify-content: space-around;
+  height: 36px;
+  line-height: 36px;
+  font-size: 24px;
+}
+
+.exp-wrapper:after {
+  content: '/';
+  position: absolute;
+  left: 50%;
+  margin-left: -4px;
+  color: #aaa;
+}
+
+input.exp {
+  float: left;
+  font-family: monospace;
+  border: 0;
+  width: 18px;
+  outline: none;
+  appearance: none;
+  font-size: 14px;
+}
+
+.credit-card-input {
+    padding: 4px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+}
+
+.credit-card-input input {
+  width: 50px!important;
+  padding: 5px!important;
+  border: none;
+}
+
+.woocommerce form .form-row.woocommerce-invalid .credit-card-input{
+    border-color: #a00;
+}
+
+.woocommerce form .form-row.woocommerce-validated .credit-card-input{
+    border-color: #6dc22e;
+}
+
+.credit-card-input input .input-text {
+  width: 50px!important;
+}
+
+.credit-card-input span {
+  margin: 0 5px!important;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.error-text {
+  color: red;
+}
+
+.wc-fyfx-form-field{
+    margin: 5px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    outline: 0;
+}
