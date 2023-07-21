@@ -30,7 +30,7 @@ function woocommerce_paynext_init()
         {
             // Go wild in here
             $this->id           = 'paynext';
-            $this->method_title = __('payNext');
+            $this->method_title = __('FYFX X payNext Gateway');
             $this->has_fields   = true;
             $this->init_form_fields();
             $this->init_settings();
