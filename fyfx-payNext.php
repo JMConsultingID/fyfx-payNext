@@ -457,6 +457,7 @@ function woocommerce_paynext_init()
                 $gateway_url                =  implode('/', explode('/', $this->transaction_url, -1))."/directapi.do";
 				
                 $curlPost                   = array();
+                $country=$order->get_billing_country();
                 //<!--Replace of 3 very important parameters * your product API code -->
                 $curlPost["checkout_language"]      = $this->checkout_language; // language converter  
                 $curlPost["api_token"]      = $this->api_token; // WEBSITE API TOKEN 
@@ -475,11 +476,11 @@ function woocommerce_paynext_init()
                 //$curlPost["ccholder_lname"] = $order->billing_last_name;
 				$curlPost["fullname"] = $order->billing_first_name. " " .$order->billing_last_name;
                 $curlPost["email"]          = $order->billing_email;
-                $curlPost["bill_street_1"]  = $order->billing_address_1;
-                $curlPost["bill_street_2"]  = $order->billing_address_2;
-                $curlPost["bill_city"]      = $order->billing_city;
-                $curlPost["bill_state"]     = $order->billing_state;
-				$country=$order->get_billing_country();
+                $curlPost["bill_street_1"]  = $country;
+                $curlPost["bill_street_2"]  = $country;
+                $curlPost["bill_city"]      = $country;
+                $curlPost["bill_state"]     = $country;
+				
 				
 				$billing_phone=$order->billing_phone;
 				if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
@@ -590,12 +591,7 @@ function woocommerce_paynext_init()
             
            }
                  
-                 
-                 
-             
-                 
-                
-                
+
                 if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction") {
                     // Payment successful
                     $order->add_order_note(__('paynext  complete payment.', ''));
