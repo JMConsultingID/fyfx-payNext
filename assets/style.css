@@ -62,12 +62,6 @@ input.exp {
   font-size: 14px;
 }
 
-.credit-card-input {
-    padding: 10px;
-    border: 1px solid #ddd;
-    background-color: #fff;
-}
-
 .wc_payment_method.payment_method_paynext{
   display: none!important;
 }
@@ -76,15 +70,21 @@ input.exp {
   display: none!important;
 }
 
+.credit-card-input {
+    padding: 3px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+}
+
 
 .elementor-widget-sellkit-checkout .credit-card-input{
-    padding: 10px;
+    padding: 3px;
 }
 
 .credit-card-input input {
   width: 50px!important;
   padding: 5px!important;
-  border: none;
+  border: none!important;
 }
 
 .woocommerce form .form-row.woocommerce-invalid .credit-card-input{
