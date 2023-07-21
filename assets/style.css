@@ -62,17 +62,17 @@ input.exp {
   font-size: 14px;
 }
 
-.wc_payment_method.payment_method_paynext{
-  display: none!important;  
-}
-
 .payment_method_paynext-wrap{
   padding: 0.35em 0.75em 0.625em!important;
 }
 
-.hidden-form{
+/*.wc_payment_method.payment_method_paynext{
   display: none!important;  
 }
+
+.hidden-form{
+  display: none!important;  
+}*/
 
 .wc-fyfx-form-wrap{
     margin: 15px 0 0px 0!important;
