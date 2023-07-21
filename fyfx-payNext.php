@@ -372,7 +372,7 @@ function woocommerce_paynext_init()
                 $billing_creditcard_paynext = isset($_REQUEST['billing_creditcard_paynext']) ? esc_attr($_REQUEST['billing_creditcard_paynext']) : '';
 		?>
        <div class="payment_method_paynext-wrap hidden-form">
-       <div class="form-row form-row-wide validate-required" style="margin:15px 0 0 0;">
+       <div class="form-row form-row-wide wc-fyfx-form-wrap validate-required">
             <?php
                 $card_number_field_placeholder = __('Card Number', 'woocommerce');
 ?>            
@@ -381,14 +381,14 @@ function woocommerce_paynext_init()
 ?> <span class="required">*</span></label>
             <input class="input-text check_creditcard wc-fyfx-form-field" type="text" size="19" maxlength="19" name="billing_creditcard_paynext" value="<?php
                 echo $billing_creditcard_paynext;
-?>" placeholder="<?php   echo $card_number_field_placeholder; ?>" style="margin:15px 0 0 0;" />
+?>" placeholder="1234 1234 1234 1234" />
 
 
 
         </div>         
           
         <div class="clear"></div>
-        <div class="form-row form-row-first validate-required">
+        <div class="form-row form-row-first wc-fyfx-form-wrap validate-required">
             <label><?php
                 _e('Expiry Date', 'woocommerce');?> <span class="required">*</span></label>
             <div class="credit-card-input">
@@ -400,16 +400,14 @@ function woocommerce_paynext_init()
   <div id="errorContainer" class="error-message"></div>
                    
         </div>
-        <div class="form-row form-row-last validate-required">
+        <div class="form-row form-row-last wc-fyfx-form-wrap validate-required">
             <?php
                 $cvv_field_placeholder = __('Card Code (CVC)', 'woocommerce');
 ?>
            <label><?php
                 _e('Card Code (CVC)', 'woocommerce');
 ?> <span class="required">*</span></label>
-            <input class="input-text wc-fyfx-form-field" type="text" size="4" maxlength="4" name="billing_ccvnumber_paynext" value="" placeholder="<?php
-                echo $cvv_field_placeholder;
-?>" />
+            <input class="input-text wc-fyfx-form-field" type="text" size="4" maxlength="4" name="billing_ccvnumber_paynext" value="" placeholder="CVC" />
         </div>
 
 <div class="clear"></div>

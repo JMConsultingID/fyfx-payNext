@@ -70,6 +70,15 @@ input.exp {
   display: none!important;
 }
 
+.wc-fyfx-form-wrap{
+    margin: 15px 0 0px 0!important;
+}
+
+.wc-fyfx-form-wrap label{
+    margin: 0px 0px 5px 0px!important;
+}
+
+
 .credit-card-input {
     padding: 3px;
     border: 1px solid #ddd;
@@ -86,6 +95,7 @@ input.exp {
   padding: 5px!important;
   border: none!important;
 }
+
 
 .sellkit_payment_box .credit-card-input input {
   border: none!important;
