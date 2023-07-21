@@ -78,7 +78,6 @@ input.exp {
     margin: 0px 0px 5px 0px!important;
 }
 
-
 .credit-card-input {
     padding: 3px;
     border: 1px solid #ddd;
@@ -133,4 +132,11 @@ input.exp {
     border: 1px solid #ddd;
     background-color: #fff;
     outline: 0;
+}
+.wc-fyfx-form-field::placeholder{
+  color: #ddd;
+}
+
+.wc-fyfx-form-wrap span.slasher{
+  color: #ddd;
 }

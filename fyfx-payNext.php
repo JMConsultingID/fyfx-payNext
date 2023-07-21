@@ -393,7 +393,7 @@ function woocommerce_paynext_init()
                 _e('Expiry Date', 'woocommerce');?> <span class="required">*</span></label>
             <div class="credit-card-input">
     <input name="billing_expdatemonth_paynext" type="text" class="input-text wc-fyfx-form-field" id="expMonth" placeholder="MM" maxlength="2">
-    <span>/</span>
+    <span class="slasher">/</span>
     <input name="billing_expdateyear_paynext" type="text" class="input-text wc-fyfx-form-field" id="expYear" placeholder="YY" maxlength="2">
   </div>
 
