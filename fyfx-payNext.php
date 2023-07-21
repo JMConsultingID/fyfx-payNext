@@ -8,11 +8,56 @@ Description: FYFX WooCommerce with paynext payment gateway.
 Version: 1.2
 
 */
+
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+    die;
+}
+
 include_once('woo-check-card-class.php');
 
 if (!defined('ABSPATH'))
     exit;
 add_action('plugins_loaded', 'woocommerce_paynext_init', 0);
+
+if (!function_exists('is_plugin_active')) {
+    include_once(ABSPATH . '/wp-admin/includes/plugin.php');
+}
+
+/**
+* Check for the existence of WooCommerce and any other requirements
+*/
+function fyfx_paynext_check_requirements() {
+    if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+        return true;
+    } else {
+        add_action( 'admin_notices', 'fyfx_paynext_missing_wc_notice' );
+        return false;
+    }
+}
+
+/**
+* Display a message advising WooCommerce is required
+*/
+function fyfx_paynext_missing_wc_notice() { 
+    $class = 'notice notice-error';
+    $message = __( 'FYFX Propfirm User requires WooCommerce to be installed and active.', 'fyfx-propfirm-user' );
+ 
+    printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) ); 
+}
+
+add_action( 'plugins_loaded', 'fyfx_paynext_check_requirements' );
+
+function filter_action_fyfx_paynext_links( $links ) {
+     $links['settings'] = '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paynext' ) . '">' . __( 'Settings', 'fyfx-propfirm-user' ) . '</a>';
+     $links['support'] = '<a href="https://portal.online-epayment.com/developers.do">' . __( 'Doc', 'fyfx-propfirm-user' ) . '</a>';
+     // if( class_exists( 'Fyfx_Payment' ) ) {
+     //  $links['upgrade'] = '<a href="https://fundyourfx.com">' . __( 'Upgrade', 'fyfx-propfirm-user' ) . '</a>';
+     // }
+     return $links;
+}
+add_filter( 'plugin_action_links_fyfx-payNext/fyfx-payNext.php', 'filter_action_fyfx_paynext_links', 10, 1 );
+
 function woocommerce_paynext_init()
 {
     if (!class_exists('WC_Payment_Gateway'))
