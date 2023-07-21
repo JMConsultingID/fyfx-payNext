@@ -68,7 +68,7 @@ input.exp {
     background-color: #fff;
 }
 
-.hidden-form{
+.wc_payment_method.payment_method_paynext{
   display: none!important;
 }
 
