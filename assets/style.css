@@ -64,6 +64,7 @@ input.exp {
 
 .wc_payment_method.payment_method_paynext{
   display: none!important;
+  padding: 0.35em 0.75em 0.625em;
 }
 
 .hidden-form{
