@@ -1,13 +1,28 @@
 <?php 
-
-
-/*
-Plugin Name: A - FYFX x PayNext Gateway WooCommerce
-Plugin URI: 
-Description: FYFX x PayNext Payment Gateway for WooCommerce
-Version: 1.2
-
-*/
+/**
+ * The plugin bootstrap file
+ *
+ * This file is read by WordPress to generate the plugin information in the plugin
+ * admin area. This file also includes all of the dependencies used by the plugin,
+ * registers the activation and deactivation functions, and defines a function
+ * that starts the plugin.
+ *
+ * @link              https://fundyourfx.com
+ * @since             1.0.0
+ * @package           Fyfx_PayNext
+ *
+ * @wordpress-plugin
+ * Plugin Name:       A - FYFX x PayNext Gateway WooCommerce
+ * Plugin URI:        https://fundyourfx.com
+ * Description:       FYFX x PayNext Payment Gateway for WooCommerce
+ * Version:           1.2.0
+ * Author:            Ardi JM (Editor) | Original By PayNext 
+ * Author URI:        https://fundyourfx.com
+ * License:           GPL-2.0+
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain:       fyfx-payNext
+ * Domain Path:       /languages
+ */
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
