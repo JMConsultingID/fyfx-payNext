@@ -329,8 +329,7 @@ function woocommerce_paynext_init()
         <div class="clear"></div>
         <div class="form-row form-row-first validate-required">
             <label><?php
-                _e('Expiration Date', 'woocommerce');
-?> <span class="required">*</span></label>
+                _e('Expiry Date', 'woocommerce');?> <span class="required">*</span></label>
             <div class="credit-card-input">
     <input name="billing_expdatemonth_paynext" type="text" class="input-text wc-fyfx-form-field" id="expMonth" placeholder="MM" maxlength="2">
     <span>/</span>
@@ -342,22 +341,15 @@ function woocommerce_paynext_init()
         </div>
         <div class="form-row form-row-last validate-required">
             <?php
-                $cvv_field_placeholder = __('Card Verification Number (CVV)', 'woocommerce');
+                $cvv_field_placeholder = __('Card Code (CVC)', 'woocommerce');
 ?>
            <label><?php
-                _e('Card Verification Number (CVV)', 'woocommerce');
+                _e('Card Code (CVC)', 'woocommerce');
 ?> <span class="required">*</span></label>
             <input class="input-text wc-fyfx-form-field" type="text" size="4" maxlength="4" name="billing_ccvnumber_paynext" value="" placeholder="<?php
                 echo $cvv_field_placeholder;
 ?>" />
         </div>
-
-
-
-
-
-      
-        
 
 <div class="clear"></div>
         
