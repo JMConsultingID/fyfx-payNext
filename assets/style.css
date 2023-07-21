@@ -68,6 +68,10 @@ input.exp {
     background-color: #fff;
 }
 
+.hidden-form{
+  display: none!important;
+}
+
 .elementor-widget-sellkit-checkout .credit-card-input{
     padding: 10px;
 }
