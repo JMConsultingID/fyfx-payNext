@@ -66,11 +66,12 @@ input.exp {
   display: none!important;  
 }
 
-.payment_method_paynext-wrap
+.payment_method_paynext-wrap{
+  padding: 0.35em 0.75em 0.625em!important;
+}
 
 .hidden-form{
-  display: none!important;
-  padding: 0.35em 0.75em 0.625em!important;
+  display: none!important;  
 }
 
 .wc-fyfx-form-wrap{
