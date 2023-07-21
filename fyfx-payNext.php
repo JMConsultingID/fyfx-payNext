@@ -4,7 +4,7 @@
 /*
 Plugin Name: A - FYFX x PayNext Gateway WooCommerce
 Plugin URI: 
-Description: FYFX WooCommerce with paynext payment gateway.
+Description: FYFX x PayNext Payment Gateway for WooCommerce
 Version: 1.2
 
 */
