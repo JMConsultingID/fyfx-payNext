@@ -87,6 +87,10 @@ input.exp {
   border: none!important;
 }
 
+.sellkit_payment_box .credit-card-input input {
+  border: none!important;
+}
+
 .woocommerce form .form-row.woocommerce-invalid .credit-card-input{
     border-color: #a00;
 }
