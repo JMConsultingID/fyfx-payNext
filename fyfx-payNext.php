@@ -50,7 +50,7 @@ add_action( 'plugins_loaded', 'fyfx_paynext_check_requirements' );
 
 function filter_action_fyfx_paynext_links( $links ) {
      $links['settings'] = '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paynext' ) . '">' . __( 'Settings', 'fyfx-propfirm-user' ) . '</a>';
-     $links['support'] = '<a href="https://portal.online-epayment.com/developers.do">' . __( 'Doc', 'fyfx-propfirm-user' ) . '</a>';
+     $links['support'] = '<a href="https://portal.online-epayment.com/developers.do"  target="_blank">' . __( 'Doc', 'fyfx-propfirm-user' ) . '</a>';
      // if( class_exists( 'Fyfx_Payment' ) ) {
      //  $links['upgrade'] = '<a href="https://fundyourfx.com">' . __( 'Upgrade', 'fyfx-propfirm-user' ) . '</a>';
      // }
