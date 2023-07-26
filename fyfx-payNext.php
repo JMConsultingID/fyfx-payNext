@@ -575,7 +575,7 @@ function woocommerce_paynext_init()
 					
 					update_post_meta( $order_id, 'error', $error );
 				}
-				update_post_meta( $order_id, 'address', $billing_address_1 );
+				update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
                 
                
               
