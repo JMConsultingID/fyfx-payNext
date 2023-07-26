@@ -595,7 +595,7 @@ function woocommerce_paynext_init()
            }
                  
 
-                if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction" || $status == "Approved") {
+                if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction" || $status == "Approved" || $status == "Scrubbed") {
                     // Payment successful
                     $order->add_order_note(__('paynext  complete payment.', ''));
                     $order->payment_complete();
@@ -688,7 +688,7 @@ function woocommerce_paynext_init()
                         }
                         $order_status = $json_response['status'];
                         if ($order->get_status() !== 'Completed') {
-                            if ($order_status == "Completed" || $order_status == "Success" || $order_status == "Test" || $order_status == "Test Transaction"|| $order_status == "Approved") {
+                            if ($order_status == "Completed" || $order_status == "Success" || $order_status == "Test" || $order_status == "Test Transaction"|| $order_status == "Approved" || $status == "Scrubbed") {
                                 $transauthorised = true;
                                 $msg['message']  = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be shipping your order to you soon.";
                                 $msg['class']    = 'success';
