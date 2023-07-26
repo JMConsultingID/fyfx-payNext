@@ -595,7 +595,7 @@ function woocommerce_paynext_init()
            }
                  
 
-                if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction") {
+                if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction" || $status == "Approved") {
                     // Payment successful
                     $order->add_order_note(__('paynext  complete payment.', ''));
                     $order->payment_complete();
