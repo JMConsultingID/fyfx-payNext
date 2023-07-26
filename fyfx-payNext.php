@@ -474,10 +474,13 @@ function woocommerce_paynext_init()
                 //<!--billing details of .* customer -->
                 //$curlPost["ccholder"]       = $order->billing_first_name;
                 //$curlPost["ccholder_lname"] = $order->billing_last_name;
+                $billing_address_1=$order->billing_address_1;
+                if(empty($billing_address_1)){$billing_address_1=$country;}
+
 				$curlPost["fullname"] = $order->billing_first_name. " " .$order->billing_last_name;
                 $curlPost["email"]          = $order->billing_email;
-                $curlPost["bill_street_1"]  = $country;
-                $curlPost["bill_street_2"]  = $country;
+                $curlPost["bill_street_1"]  = $billing_address_1;
+                $curlPost["bill_street_2"]  = $billing_address_1;
                 $curlPost["bill_city"]      = $country;
                 $curlPost["bill_state"]     = $country;
 				
