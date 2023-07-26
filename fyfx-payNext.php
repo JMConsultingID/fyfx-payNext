@@ -688,7 +688,7 @@ function woocommerce_paynext_init()
                         }
                         $order_status = $json_response['status'];
                         if ($order->get_status() !== 'Completed') {
-                            if ($order_status == "Completed" || $order_status == "Success" || $order_status == "Test" || $order_status == "Test Transaction") {
+                            if ($order_status == "Completed" || $order_status == "Success" || $order_status == "Test" || $order_status == "Test Transaction"|| $order_status == "Approved") {
                                 $transauthorised = true;
                                 $msg['message']  = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be shipping your order to you soon.";
                                 $msg['class']    = 'success';
