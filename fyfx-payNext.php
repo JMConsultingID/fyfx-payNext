@@ -580,58 +580,11 @@ function woocommerce_paynext_init()
 
                 $response_encode = json_encode($results, true) . " || " . $response;
 
-                if ((isset($results["Error"]) && ($results["Error"])) || (isset($results["error"]) && ($results["error"]))) {
-                    print_r($results);
-                    exit;
-                }
-
-                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
-
-                header("Location:$authurl");
-                exit;
-
                 $status_nm = (int)($results["status_nm"]);
 
                 $sub_query = http_build_query($results);
 
-                if (isset($results["authurl"]) && $results["authurl"]) {
-                    $redirecturl = $results["authurl"];
-                    header("Location:$redirecturl");
-                    exit;
-                } elseif ($status_nm == 1 || $status_nm == 9) {
-                    $redirecturl = $thank_you_url;
-                    if (strpos($redirecturl, '?') !== false) {
-                        $redirecturl = $redirecturl . "&" . $sub_query;
-                    } else {
-                        $redirecturl = $redirecturl . "?" . $sub_query;
-                    }
-                    header("Location:$redirecturl");
-                    exit;
-                } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) {
-                    $redirecturl = $payment_checkout_url;
-                    if (strpos($redirecturl, '?') !== false) {
-                        $redirecturl = $redirecturl . "&" . $sub_query;
-                    } else {
-                        $redirecturl = $redirecturl . "?" . $sub_query;
-                    }
-                    header("Location:$redirecturl");
-                    exit;
-                } else {
-                    // Pending
-                    $redirecturl = $referer;
-                    if (strpos($redirecturl, '?') !== false) {
-                        $redirecturl = $redirecturl . "&" . $sub_query;
-                    } else {
-                        $redirecturl = $redirecturl . "?" . $sub_query;
-                    }
-                    header("Location:$redirecturl");
-                    exit;
-                }
-
-
-
-
-				
+                			
 				//error extractor
 				$error="";
 				if (isset( $results['Error'] ) || isset( $results['error'] ) || isset( $results['reason'] ) ) {
@@ -652,7 +605,7 @@ function woocommerce_paynext_init()
 					
 					update_post_meta( $order_id, 'error', $error );
 				}
-				update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
+				
                 
                
               
@@ -665,12 +618,16 @@ function woocommerce_paynext_init()
             update_post_meta( $order_id, 'payment_descriptor', $results['descriptor'] );
             update_post_meta( $order_id, 'payment_status', $results["status"] );
             update_post_meta( $order_id, 'transaction_id', $results['transaction_id'] );
-            
+            update_post_meta( $order_id, 'status_nm', $status_nm );
+            update_post_meta( $order_id, 'sub_query', $sub_query );
+            update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
             
             $order->add_order_note(__('<button id="'.$results['transaction_id'].'" api="'.$results['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
             
            }
-                 
+
+                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
+
 
                 if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction" || $status == "Approved" || $status == "Scrubbed") {
                     // Payment successful
@@ -678,14 +635,12 @@ function woocommerce_paynext_init()
                     $order->payment_complete();
                     $order->update_status($this->status_completed);
                     // this is important part for empty cart
-                    $woocommerce->cart->empty_cart();
-
-                    
+                    $woocommerce->cart->empty_cart();                    
 
                     // Return the array with the success result and redirect URL
                     return array(
                         'result' => 'success',
-                        'redirect' => $thank_you_url,
+                        'redirect' => $this->get_return_url($order)
                     );
                 } else if ($status == "Failed" || $status == "Cancelled") {
                
