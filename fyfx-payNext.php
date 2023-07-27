@@ -709,7 +709,7 @@ function woocommerce_paynext_init()
             update_post_meta($order_id, '_post_data', $_POST);
             return array(
                 'result' => 'success',
-                'redirect' => $order->get_checkout_payment_url(true)
+                'redirect' => $this->get_return_url($order)
             );
         }
         
