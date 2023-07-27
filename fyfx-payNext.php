@@ -426,6 +426,25 @@ function woocommerce_paynext_init()
                 echo $this->generate_paynext_form($order);
             }
         }
+
+         // Inside the same class
+        function get_thank_you_url($order) {
+            // Assuming you have a method to get the return URL in your WooCommerce integration
+            return $this->get_return_url($order);
+        }
+
+        function thank_you_url_fyfx() {
+            // Some code here
+            // Get the thank you URL for WooCommerce
+            $thank_you_url = $this->get_thank_you_url($order);
+
+            // Return the array with the success result and redirect URL
+            return array(
+                'result' => 'success',
+                'redirect' => $thank_you_url,
+            );
+        }
+
         /**
          * Process the payment and return the result
          **/
@@ -540,7 +559,10 @@ function woocommerce_paynext_init()
                 $response = curl_exec($curl);
 				curl_close($curl);
                 $results  = json_decode($response, true);
-				
+
+                // Call thank_you_url_fyfx() and pass $order_id
+                $result_thank_you = $this->thank_you_url_fyfx($order_id);
+
 				if ( $results['response']['code'] == '200' ) {
 					$results = json_decode( $results['body'], true );
 				}
@@ -602,11 +624,9 @@ function woocommerce_paynext_init()
                     $order->update_status($this->status_completed);
                     // this is important part for empty cart
                     $woocommerce->cart->empty_cart();
+
                     // Redirect to thank you page
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $this->get_return_url($order)
-                    );
+                    return $result_thank_you;
                 } else if ($status == "Failed" || $status == "Cancelled") {
                
                     
@@ -637,10 +657,7 @@ function woocommerce_paynext_init()
                 }
             }
             update_post_meta($order_id, '_post_data', $_POST);
-            return array(
-                'result' => 'success',
-                'redirect' => $this->get_return_url($order)
-            );
+            return $result_thank_you;
         }
         
         
