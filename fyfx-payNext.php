@@ -560,8 +560,7 @@ function woocommerce_paynext_init()
 				curl_close($curl);
                 $results  = json_decode($response, true);
 
-                // Call thank_you_url_fyfx() and pass $order_id
-                $result_thank_you = $this->thank_you_url_fyfx($order_id);
+                
 
 				if ( $results['response']['code'] == '200' ) {
 					$results = json_decode( $results['body'], true );
@@ -573,9 +572,65 @@ function woocommerce_paynext_init()
 					
 				}
 				
-                $status   = $results["status"];
-				
-                $response_encode =  json_encode( $results , true) . " || " . $response ; 
+
+                $thank_you_url = $this->get_thank_you_url($order);
+                $payment_checkout_url = $this->get_payment_checkout_url($order_id);
+
+                $status = $results["status"];
+
+                $response_encode = json_encode($results, true) . " || " . $response;
+
+                if ((isset($results["Error"]) && ($results["Error"])) || (isset($results["error"]) && ($results["error"]))) {
+                    print_r($results);
+                    exit;
+                }
+
+                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
+
+                header("Location:$authurl");
+                exit;
+
+                $status_nm = (int)($results["status_nm"]);
+
+                $sub_query = http_build_query($results);
+
+                if (isset($results["authurl"]) && $results["authurl"]) {
+                    $redirecturl = $results["authurl"];
+                    header("Location:$redirecturl");
+                    exit;
+                } elseif ($status_nm == 1 || $status_nm == 9) {
+                    $redirecturl = $thank_you_url;
+                    if (strpos($redirecturl, '?') !== false) {
+                        $redirecturl = $redirecturl . "&" . $sub_query;
+                    } else {
+                        $redirecturl = $redirecturl . "?" . $sub_query;
+                    }
+                    header("Location:$redirecturl");
+                    exit;
+                } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) {
+                    $redirecturl = $payment_checkout_url;
+                    if (strpos($redirecturl, '?') !== false) {
+                        $redirecturl = $redirecturl . "&" . $sub_query;
+                    } else {
+                        $redirecturl = $redirecturl . "?" . $sub_query;
+                    }
+                    header("Location:$redirecturl");
+                    exit;
+                } else {
+                    // Pending
+                    $redirecturl = $referer;
+                    if (strpos($redirecturl, '?') !== false) {
+                        $redirecturl = $redirecturl . "&" . $sub_query;
+                    } else {
+                        $redirecturl = $redirecturl . "?" . $sub_query;
+                    }
+                    header("Location:$redirecturl");
+                    exit;
+                }
+
+
+
+
 				
 				//error extractor
 				$error="";
@@ -625,8 +680,13 @@ function woocommerce_paynext_init()
                     // this is important part for empty cart
                     $woocommerce->cart->empty_cart();
 
-                    // Redirect to thank you page
-                    return $result_thank_you;
+                    
+
+                    // Return the array with the success result and redirect URL
+                    return array(
+                        'result' => 'success',
+                        'redirect' => $thank_you_url,
+                    );
                 } else if ($status == "Failed" || $status == "Cancelled") {
                
                     
@@ -657,7 +717,10 @@ function woocommerce_paynext_init()
                 }
             }
             update_post_meta($order_id, '_post_data', $_POST);
-            return $result_thank_you;
+            return array(
+                'result' => 'success',
+                'redirect' => $order->get_checkout_payment_url(true)
+            );
         }
         
         
