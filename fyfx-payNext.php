@@ -586,7 +586,7 @@ function woocommerce_paynext_init()
 					}
 					//$error.=$response." | ";
 					
-					update_post_meta( $order_id, 'status', $error );
+					update_post_meta( $order_id, 'response_status', $error );
 				}
 				
                 
