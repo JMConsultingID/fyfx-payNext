@@ -598,45 +598,51 @@ function woocommerce_paynext_init()
             
            }
 
-           $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
-           header("Location:$authurl");exit;
+               $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
+               header("Location:$authurl");exit;
 
-           $status_nm = (int)($results["status_nm"]);
-           $sub_query = http_build_query($results);
+               $status_nm = (int)($results["status_nm"]);
+               $sub_query = http_build_query($results);
 
-           if (isset($results["authurl"]) && $results["authurl"]) { //3D Bank URL
-                $redirecturl = $results["authurl"];
-                header("Location: $redirecturl");
-                exit;
-            } elseif ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
-                $redirecturl = $curlPost["success_url"];
-                if (strpos($redirecturl, '?') !== false) {
-                    $redirecturl = $redirecturl . "&" . $sub_query;
-                } else {
-                    $redirecturl = $redirecturl . "?" . $sub_query;
-                }
-                header("Location: $redirecturl");
-                exit;
-            } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
-                $redirecturl = $curlPost["error_url"];
-                if (strpos($redirecturl, '?') !== false) {
-                    $redirecturl = $redirecturl . "&" . $sub_query;
-                } else {
-                    $redirecturl = $redirecturl . "?" . $sub_query;
-                }
-                header("Location: $redirecturl");
-                exit;
-            } else { // Pending
-                $redirecturl = $referer;
-                if (strpos($redirecturl, '?') !== false) {
-                    $redirecturl = $redirecturl . "&" . $sub_query;
-                } else {
-                    $redirecturl = $redirecturl . "?" . $sub_query;
-                }
-                header("Location: $redirecturl");
-                exit;
-            }
-                
+               if (isset($results["authurl"]) && $results["authurl"]) { //3D Bank URL
+                    $redirecturl = $results["authurl"];
+                    header("Location: $redirecturl");
+                    exit;
+                } elseif ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
+                    $redirecturl = $curlPost["success_url"];
+                    if (strpos($redirecturl, '?') !== false) {
+                        $order->add_order_note(__('paynext  complete payment.', ''));
+                        $order->payment_complete();
+                        $order->update_status($this->status_completed);
+                        $redirecturl = $redirecturl . "&" . $sub_query;
+                    } else {
+                        $order->add_order_note(__('paynext  complete payment.', ''));
+                        $order->payment_complete();
+                        $order->update_status($this->status_completed);
+                        $redirecturl = $redirecturl . "&" . $sub_query;
+                        $redirecturl = $redirecturl . "?" . $sub_query;
+                    }
+                    header("Location: $redirecturl");
+                    exit;
+                } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
+                    $redirecturl = $curlPost["error_url"];
+                    if (strpos($redirecturl, '?') !== false) {
+                        $redirecturl = $redirecturl . "&" . $sub_query;
+                    } else {
+                        $redirecturl = $redirecturl . "?" . $sub_query;
+                    }
+                    header("Location: $redirecturl");
+                    exit;
+                } else { // Pending
+                    $redirecturl = $referer;
+                    if (strpos($redirecturl, '?') !== false) {
+                        $redirecturl = $redirecturl . "&" . $sub_query;
+                    } else {
+                        $redirecturl = $redirecturl . "?" . $sub_query;
+                    }
+                    header("Location: $redirecturl");
+                    exit;
+                }                
 
 
                 if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction" || $status == "Approved" || $status == "Scrubbed") {
