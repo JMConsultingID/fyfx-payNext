@@ -618,13 +618,13 @@ function woocommerce_paynext_init()
            if ($validation_3ds=='yes') {
 
                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
-               header("Location:$authurl");exit;
+
+               wp_redirect($authurl);exit;
                
 
                if (isset($results["authurl"]) && $results["authurl"]) { //3D Bank URL
                     $redirecturl = $results["authurl"];
-                    header("Location: $redirecturl");
-                    exit;
+                    wp_redirect($redirecturl);exit;
                 } elseif ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
                     $redirecturl = $curlPost["success_url"];
                     if (strpos($redirecturl, '?') !== false) {
@@ -639,8 +639,7 @@ function woocommerce_paynext_init()
                         $redirecturl = $redirecturl . "&" . $sub_query;
                         $redirecturl = $redirecturl . "?" . $sub_query;
                     }
-                    header("Location: $redirecturl");
-                    exit;
+                    wp_redirect($redirecturl);exit;
                 } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
                     $redirecturl = $curlPost["error_url"];
                     if (strpos($redirecturl, '?') !== false) {
@@ -648,8 +647,7 @@ function woocommerce_paynext_init()
                     } else {
                         $redirecturl = $redirecturl . "?" . $sub_query;
                     }
-                    header("Location: $redirecturl");
-                    exit;
+                    wp_redirect($redirecturl);exit;
                 } else { // Pending
                     $redirecturl = $referer;
                     if (strpos($redirecturl, '?') !== false) {
@@ -657,8 +655,7 @@ function woocommerce_paynext_init()
                     } else {
                         $redirecturl = $redirecturl . "?" . $sub_query;
                     }
-                    header("Location: $redirecturl");
-                    exit;
+                    wp_redirect($redirecturl);exit;
                 } 
             }              
 
