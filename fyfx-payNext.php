@@ -559,9 +559,13 @@ function woocommerce_paynext_init()
 
                 $response_encode = json_encode($results, true) . " || " . $response;
 
+                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
+
                 $status_nm = (int)($results["status_nm"]);
 
                 $sub_query = http_build_query($results);
+
+
 
             			
 				//error extractor
