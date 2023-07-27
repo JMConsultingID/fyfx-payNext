@@ -570,8 +570,9 @@ function woocommerce_paynext_init()
 				
 
                 $status = $results["status"];
-
                 $response_encode = json_encode($results, true) . " || " . $response;
+                $status_nm = (int)($results["status_nm"]);
+                $sub_query = http_build_query($results);
 
                			
 				//error extractor
@@ -618,9 +619,7 @@ function woocommerce_paynext_init()
 
                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
                header("Location:$authurl");exit;
-
-               $status_nm = (int)($results["status_nm"]);
-               $sub_query = http_build_query($results);
+               
 
                if (isset($results["authurl"]) && $results["authurl"]) { //3D Bank URL
                     $redirecturl = $results["authurl"];
