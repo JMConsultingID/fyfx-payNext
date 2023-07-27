@@ -427,24 +427,6 @@ function woocommerce_paynext_init()
             }
         }
 
-         // Inside the same class
-        function get_thank_you_url($order) {
-            // Assuming you have a method to get the return URL in your WooCommerce integration
-            return $this->get_return_url($order);
-        }
-
-        function thank_you_url_fyfx() {
-            // Some code here
-            // Get the thank you URL for WooCommerce
-            $thank_you_url = $this->get_thank_you_url($order);
-
-            // Return the array with the success result and redirect URL
-            return array(
-                'result' => 'success',
-                'redirect' => $thank_you_url,
-            );
-        }
-
         /**
          * Process the payment and return the result
          **/
@@ -573,9 +555,6 @@ function woocommerce_paynext_init()
 				}
 				
 
-                $thank_you_url = $this->get_thank_you_url($order);
-                $payment_checkout_url = $this->get_payment_checkout_url($order_id);
-
                 $status = $results["status"];
 
                 $response_encode = json_encode($results, true) . " || " . $response;
@@ -584,8 +563,7 @@ function woocommerce_paynext_init()
 
                 $sub_query = http_build_query($results);
 
-                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
-                			
+            			
 				//error extractor
 				$error="";
 				if (isset( $results['Error'] ) || isset( $results['error'] ) || isset( $results['reason'] ) ) {
