@@ -584,6 +584,7 @@ function woocommerce_paynext_init()
 
                 $sub_query = http_build_query($results);
 
+                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
                 			
 				//error extractor
 				$error="";
@@ -626,7 +627,7 @@ function woocommerce_paynext_init()
             
            }
 
-                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
+                
 
 
                 if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction" || $status == "Approved" || $status == "Scrubbed") {
