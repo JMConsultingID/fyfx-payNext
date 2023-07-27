@@ -212,6 +212,19 @@ function woocommerce_paynext_init()
                         'host' => __('Payment Gateway (Re-Direct)', '')
                     )
                 ),
+
+                'validation_3ds' => array(
+                    'title' => __('3DS Validation', ''),
+                    'default' => 'yes',
+                    'type' => 'select',
+                        'class' => 'ao1_paynext hide',
+                        'css' => 'display:none;',
+                    'options' => array(
+                        'yes' => __('3DS Validation', ''),
+                        'no' => __('Standart', '')
+                    )
+                ),
+
                 'title' => array(
                     'title' => __('Title:', ''),
                     'type' => 'text',
