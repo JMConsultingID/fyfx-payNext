@@ -649,7 +649,7 @@ function woocommerce_paynext_init()
             
            }
 
-           $validation_3ds = $this->validation_3ds;
+               $validation_3ds = $this->validation_3ds;
 
                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
 
@@ -704,6 +704,10 @@ function woocommerce_paynext_init()
                     $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
                     
                     $order->update_status($this->status_cancelled);
+                    return array(
+                        'result' => 'success',
+                        'redirect' => $order->get_checkout_payment_url(true)
+                    );
                 } else { // Pending
                     wc_add_notice( sprintf( __($error.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
                     update_post_meta( $order_id, 'payment_status', $status_cc );
@@ -713,6 +717,10 @@ function woocommerce_paynext_init()
 
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);
+                    return array(
+                        'result' => 'success',
+                        'redirect' => $order->get_checkout_payment_url(true)
+                    );
                 }               
 
             }
