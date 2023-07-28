@@ -642,11 +642,6 @@ function woocommerce_paynext_init()
                     // this is important part for empty cart
                     $woocommerce->cart->empty_cart();                    
 
-                    // Return the array with the success result and redirect URL
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $this->get_return_url($order)
-                    );
                 } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
                    wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
                     
@@ -657,10 +652,6 @@ function woocommerce_paynext_init()
                     $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
                     
                     $order->update_status($this->status_cancelled);
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $order->get_checkout_payment_url(true)
-                    );
                 } else { // Pending
                     wc_add_notice( sprintf( __($error.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
                     update_post_meta( $order_id, 'payment_status', $status_cc );
@@ -670,10 +661,6 @@ function woocommerce_paynext_init()
 
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $order->get_checkout_payment_url(true)
-                    );
                 } 
             }              
 
