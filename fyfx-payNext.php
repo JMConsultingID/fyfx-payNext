@@ -1061,7 +1061,7 @@ function paynext_js_script_response() {
     $current_url = $_SERVER['REQUEST_URI'];
     if (strpos($current_url, '/checkout/order-received/') !== false){
         $order_id = absint(get_query_var('order-received'));
-        $api_paynext = get_post_meta($order_id, 'error', true);
+        $api_paynext = get_post_meta($order_id, 'response_status', true);
         ?>
         <script>
             var paynextResponse = <?php echo json_encode($api_paynext); ?>;
@@ -1078,7 +1078,7 @@ function paynext_js_script_response() {
         if ( $key ) {
             $order_id = wc_get_order_id_by_order_key( $key );
         }
-        $api_paynext = get_post_meta($order_id, 'error', true);
+        $api_paynext = get_post_meta($order_id, 'response_status', true);
         ?>
         <script>
             var paynextResponse = <?php echo json_encode($api_paynext); ?>;
