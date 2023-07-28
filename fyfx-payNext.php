@@ -695,8 +695,7 @@ function woocommerce_paynext_init()
                     );                  
 
                 } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
-                   wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
-                    
+                    wc_add_notice( sprintf( __($reason) ), 'error' );                    
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
@@ -709,7 +708,7 @@ function woocommerce_paynext_init()
                         'redirect' => $order->get_checkout_payment_url(true)
                     );
                 } else { // Pending
-                    wc_add_notice( sprintf( __($error.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
+                    wc_add_notice( sprintf( __($reason) ), 'error' );
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
