@@ -91,7 +91,7 @@ function woocommerce_paynext_init()
             // Go wild in here
             $this->id           = 'paynext';
             $this->method_title = __('FYFX x PayNext Gateway');
-            $this->method_description = '<p>' . __('FYFX Plugin Payment Woocomerce using payNext');
+            $this->method_description = __('FYFX Plugin Payment Woocomerce using API payNext Gateway');
             $this->has_fields   = true;
             $this->init_form_fields();
             $this->init_settings();
