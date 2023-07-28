@@ -1030,10 +1030,10 @@ function add_notice_content_shortcode() {
 add_shortcode('add_notice_content_shortcode', 'add_notice_content_shortcode');
 
 // Menampilkan pemberitahuan pada halaman "Thank You"
-function display_order_notices() {
+function display_order_payment_notices() {
     wc_print_notices();
 }
-add_action('add_notice_content', 'display_order_notices');
+add_action('add_notice_content', 'display_order_payment_notices');
 
 // Additional Script Response
 function paynext_js_script_response() {
