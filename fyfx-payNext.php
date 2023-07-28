@@ -677,49 +677,6 @@ function woocommerce_paynext_init()
                 } 
             }              
 
-
-            if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction" || $status == "Approved" || $status == "Scrubbed") {
-                // Payment successful
-                $order->add_order_note(__('paynext  complete payment.', ''));
-                $order->payment_complete();
-                $order->update_status($this->status_completed);
-                // this is important part for empty cart
-                $woocommerce->cart->empty_cart();                    
-
-                // Return the array with the success result and redirect URL
-                return array(
-                    'result' => 'success',
-                    'redirect' => $this->get_return_url($order)
-                );
-            } else if ($status == "Failed" || $status == "Cancelled") {
-           
-                
-				$reason="";
-				if ( isset( $results['reason'] ) ){
-					$reason.=$results['reason']." ";
-				}
-				
-                 wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
-                
-                
-                $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
-				
-                $order->update_status($this->status_cancelled);
-            } else {
-                //transaction error or pending 
-                //if($error
-					
-					if ( isset( $results['reason'] ) ){
-						$error .= $results['reason']." ";
-					}
-				
-					wc_add_notice( sprintf( __($error.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
-					$order->add_order_note('cError: ' . $error . "log: " . $response_encode );
-					$order->update_status($this->status_pending);
-				//}
-                
-            }
-
             }
             update_post_meta($order_id, '_post_data', $_POST);
             return array(
