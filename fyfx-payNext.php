@@ -626,7 +626,7 @@ function woocommerce_paynext_init()
 
                 $status_nm = $response_data['status_nm'];
                 $status_cc = $response_data['status'];
-                $transaction_id = $response_data['transaction_id']
+                $transaction_id = $response_data['transaction_id'];
                 $reason = $response_data['reason'];
 
            
@@ -666,7 +666,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
-                    update_post_meta( $order_id, 'response_status', $status_cc )
+                    update_post_meta( $order_id, 'response_status', $status_cc );
 
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);
