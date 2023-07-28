@@ -216,13 +216,13 @@ function woocommerce_paynext_init()
 
                 'validation_3ds' => array(
                     'title' => __('3DS Validation', ''),
-                    'default' => 'yes',
+                    'default' => 'no',
                     'type' => 'select',
                         'class' => 'ao1_paynext hide',
                         'css' => 'display:none;',
                     'options' => array(
-                        'yes' => __('3DS Validation', ''),
-                        'no' => __('Standart', '')
+                        'yes' => __('3DS Validation A', ''),
+                        'no' => __('3DS Validation B', '')
                     )
                 ),
 
