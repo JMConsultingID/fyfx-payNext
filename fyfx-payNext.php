@@ -705,8 +705,8 @@ function woocommerce_paynext_init()
                     $order->update_status($this->status_cancelled);
                     return array(
                         'result' => 'success',
-                        'redirect' => $order->get_checkout_payment_url(true)
-                    );
+                        'redirect' => $this->get_return_url($order)
+                    ); 
                 } else { // Pending
                     wc_add_notice( sprintf( __($reason) ), 'error' );
                     update_post_meta( $order_id, 'payment_status', $status_cc );
@@ -718,7 +718,7 @@ function woocommerce_paynext_init()
                     $order->update_status($this->status_pending);
                     return array(
                         'result' => 'success',
-                        'redirect' => $order->get_checkout_payment_url(true)
+                        'redirect' => $this->get_return_url($order)
                     );
                 }               
 
