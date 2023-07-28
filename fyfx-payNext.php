@@ -441,6 +441,42 @@ function woocommerce_paynext_init()
             }
         }
 
+        function get_response_from_url($api_token, $id_order) {
+            // Construct the URL
+            $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $api_token . "&id_order=" . $id_order;
+
+            // Get the response from the URL
+            $response = wp_remote_get($authurl);
+
+            // Check if the request was successful
+            if (is_wp_error($response)) {
+                return "Error fetching data.";
+            }
+
+            // Get the response body and decode the JSON data
+            $response_body = wp_remote_retrieve_body($response);
+            $data = json_decode($response_body, true);
+
+            // Check if the response was successfully decoded
+            if (!$data) {
+                return "Error decoding JSON data.";
+            }
+
+            // Extract the required information from the response
+            $status_nm = $data["status_nm"];
+            $status = $data["status"];
+            $transaction_id = $data["transaction_id"];
+            $reason = $data["reason"];
+
+            // Return the required response values as an associative array
+            return array(
+                'status_nm' => $status_nm,
+                'status' => $status,
+                'transaction_id' => $transaction_id,
+                'reason' => $reason,
+            );
+        }
+
         /**
          * Process the payment and return the result
          **/
@@ -671,42 +707,6 @@ function woocommerce_paynext_init()
                 'redirect' => $this->get_return_url($order)
             );
         }
-
-        function get_response_from_url($api_token, $id_order) {
-            // Construct the URL
-            $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $api_token . "&id_order=" . $id_order;
-
-            // Get the response from the URL
-            $response = wp_remote_get($authurl);
-
-            // Check if the request was successful
-            if (is_wp_error($response)) {
-                return "Error fetching data.";
-            }
-
-            // Get the response body and decode the JSON data
-            $response_body = wp_remote_retrieve_body($response);
-            $data = json_decode($response_body, true);
-
-            // Check if the response was successfully decoded
-            if (!$data) {
-                return "Error decoding JSON data.";
-            }
-
-            // Extract the required information from the response
-            $status_nm = $data["status_nm"];
-            $status = $data["status"];
-            $transaction_id = $data["transaction_id"];
-            $reason = $data["reason"];
-
-            // Return the required response values as an associative array
-            return array(
-                'status_nm' => $status_nm,
-                'status' => $status,
-                'transaction_id' => $transaction_id,
-                'reason' => $reason,
-            );
-        }       
         
        
         
