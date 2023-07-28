@@ -1021,6 +1021,20 @@ function check_paynext_transaction_status(){
 
 }
 
+// Function to trigger the 'before_page_content' action hook
+function add_notice_content_shortcode() {
+    ob_start();
+    do_action('add_notice_content');
+    return ob_get_clean();
+}
+add_shortcode('add_notice_content_shortcode', 'add_notice_content_shortcode');
+
+// Menampilkan pemberitahuan pada halaman "Thank You"
+function display_order_notices() {
+    wc_print_notices();
+}
+add_action('add_notice_content', 'display_order_notices');
+
 // Additional Script Response
 function paynext_js_script_response() {
     // Display API response header in inspect element
