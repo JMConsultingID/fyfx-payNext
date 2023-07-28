@@ -619,52 +619,26 @@ function woocommerce_paynext_init()
 
                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
 
-               wp_redirect($authurl);exit;
-               
+                $api_token = $curlPost["api_token"];
+                $id_order = $curlPost["id_order"];
 
-               if (isset($results["authurl"]) && $results["authurl"]) { //3D Bank URL
-                    $redirecturl = $results["authurl"];
-                    wp_redirect($redirecturl);exit;
-                } elseif ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
+                $response_data = get_response_from_url($api_token, $id_order);
+
+                $status_nm = $response_data['status_nm'];
+                $status_cc = $response_data['status'];
+                $transaction_id = $response_data['transaction_id']
+                $reason = $response_data['reason'];
+
+           
+                if ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
                     $redirecturl = $curlPost["success_url"];
-                    if (strpos($redirecturl, '?') !== false) {
-                        $order->add_order_note(__('paynext  complete payment.', ''));
-                        $order->payment_complete();
-                        $order->update_status($this->status_completed);
-                        $redirecturl = $redirecturl . "&" . $sub_query;
-                    } else {
-                        $order->add_order_note(__('paynext  complete payment.', ''));
-                        $order->payment_complete();
-                        $order->update_status($this->status_completed);
-                        $redirecturl = $redirecturl . "&" . $sub_query;
-                        $redirecturl = $redirecturl . "?" . $sub_query;
-                    }
-                    wp_redirect($redirecturl);exit;
-                } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
-                    $redirecturl = $curlPost["error_url"];
-                    if (strpos($redirecturl, '?') !== false) {
-                        $redirecturl = $redirecturl . "&" . $sub_query;
-                    } else {
-                        $redirecturl = $redirecturl . "?" . $sub_query;
-                    }
-                    wp_redirect($redirecturl);exit;
-                } else { // Pending
-                    $redirecturl = $referer;
-                    if (strpos($redirecturl, '?') !== false) {
-                        $redirecturl = $redirecturl . "&" . $sub_query;
-                    } else {
-                        $redirecturl = $redirecturl . "?" . $sub_query;
-                    }
-                    wp_redirect($redirecturl);exit;
-                } 
-            }              
-
-
-                if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction" || $status == "Approved" || $status == "Scrubbed") {
-                    // Payment successful
                     $order->add_order_note(__('paynext  complete payment.', ''));
                     $order->payment_complete();
                     $order->update_status($this->status_completed);
+                    update_post_meta( $order_id, 'payment_status', $status_cc );
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    update_post_meta( $order_id, 'status_nm', $status_nm );
+                    update_post_meta( $order_id, 'response_status', $status_cc );
                     // this is important part for empty cart
                     $woocommerce->cart->empty_cart();                    
 
@@ -673,34 +647,79 @@ function woocommerce_paynext_init()
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order)
                     );
-                } else if ($status == "Failed" || $status == "Cancelled") {
-               
+                } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
+                   wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
                     
-					$reason="";
-					if ( isset( $results['reason'] ) ){
-						$reason.=$results['reason']." ";
-					}
-					
-                     wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
-                    
-                    
+                    update_post_meta( $order_id, 'payment_status', $status_cc );
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    update_post_meta( $order_id, 'status_nm', $status_nm );
+                    update_post_meta( $order_id, 'response_status', $status_cc );
                     $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
-					
-                    $order->update_status($this->status_cancelled);
-                } else {
-                    //transaction error or pending 
-                    //if($error
-						
-						if ( isset( $results['reason'] ) ){
-							$error .= $results['reason']." ";
-						}
-					
-						wc_add_notice( sprintf( __($error.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
-						$order->add_order_note('cError: ' . $error . "log: " . $response_encode );
-						$order->update_status($this->status_pending);
-					//}
                     
-                }
+                    $order->update_status($this->status_cancelled);
+                    return array(
+                        'result' => 'success',
+                        'redirect' => $order->get_checkout_payment_url(true)
+                    );
+                } else { // Pending
+                    wc_add_notice( sprintf( __($error.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
+                    update_post_meta( $order_id, 'payment_status', $status_cc );
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    update_post_meta( $order_id, 'status_nm', $status_nm );
+                    update_post_meta( $order_id, 'response_status', $status_cc )
+
+                    $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
+                    $order->update_status($this->status_pending);
+                    return array(
+                        'result' => 'success',
+                        'redirect' => $order->get_checkout_payment_url(true)
+                    );
+                } 
+            }              
+
+
+            if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction" || $status == "Approved" || $status == "Scrubbed") {
+                // Payment successful
+                $order->add_order_note(__('paynext  complete payment.', ''));
+                $order->payment_complete();
+                $order->update_status($this->status_completed);
+                // this is important part for empty cart
+                $woocommerce->cart->empty_cart();                    
+
+                // Return the array with the success result and redirect URL
+                return array(
+                    'result' => 'success',
+                    'redirect' => $this->get_return_url($order)
+                );
+            } else if ($status == "Failed" || $status == "Cancelled") {
+           
+                
+				$reason="";
+				if ( isset( $results['reason'] ) ){
+					$reason.=$results['reason']." ";
+				}
+				
+                 wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
+                
+                
+                $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
+				
+                $order->update_status($this->status_cancelled);
+            } else {
+                //transaction error or pending 
+                //if($error
+					
+					if ( isset( $results['reason'] ) ){
+						$error .= $results['reason']." ";
+					}
+				
+					wc_add_notice( sprintf( __($error.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
+					$order->add_order_note('cError: ' . $error . "log: " . $response_encode );
+					$order->update_status($this->status_pending);
+				//}
+                
+            }
+
             }
             update_post_meta($order_id, '_post_data', $_POST);
             return array(
@@ -708,7 +727,42 @@ function woocommerce_paynext_init()
                 'redirect' => $this->get_return_url($order)
             );
         }
-        
+
+        function get_response_from_url($api_token, $id_order) {
+            // Construct the URL
+            $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $api_token . "&id_order=" . $id_order;
+
+            // Get the response from the URL
+            $response = wp_remote_get($authurl);
+
+            // Check if the request was successful
+            if (is_wp_error($response)) {
+                return "Error fetching data.";
+            }
+
+            // Get the response body and decode the JSON data
+            $response_body = wp_remote_retrieve_body($response);
+            $data = json_decode($response_body, true);
+
+            // Check if the response was successfully decoded
+            if (!$data) {
+                return "Error decoding JSON data.";
+            }
+
+            // Extract the required information from the response
+            $status_nm = $data["status_nm"];
+            $status = $data["status"];
+            $transaction_id = $data["transaction_id"];
+            $reason = $data["reason"];
+
+            // Return the required response values as an associative array
+            return array(
+                'status_nm' => $status_nm,
+                'status' => $status,
+                'transaction_id' => $transaction_id,
+                'reason' => $reason,
+            );
+        }       
         
        
         
@@ -803,6 +857,10 @@ function woocommerce_paynext_init()
             wp_redirect($redirect_url);
             exit;
         }
+
+
+        
+
         /*
       
         
