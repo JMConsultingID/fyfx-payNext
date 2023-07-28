@@ -420,7 +420,7 @@ function woocommerce_paynext_init()
                 $cvv_field_placeholder = __('Card Code (CVC)', 'woocommerce');
 ?>
            <label><?php
-                _e('Card Code (CVC)', 'woocommerce');
+                _e('CVC', 'woocommerce');
 ?> <span class="required">*</span></label>
             <input class="input-text wc-fyfx-form-field" type="text" size="4" maxlength="4" name="billing_ccvnumber_paynext" value="" placeholder="CVC" />
         </div>
