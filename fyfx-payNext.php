@@ -478,6 +478,19 @@ function woocommerce_paynext_init()
             );
         }
 
+        // Redirect WooCommerce checkout payment URL to page 123
+        add_filter('woocommerce_get_checkout_payment_url', 'custom_checkout_payment_url_redirect', 10, 2);
+        function custom_checkout_payment_url_redirect($url, $order) {
+            // Set the page ID you want to redirect to
+            $redirect_page_id = 343;
+
+            // Get the URL of the page with the specified ID
+            $redirect_url = get_permalink($redirect_page_id);
+
+            // Return the custom redirect URL
+            return $redirect_url;
+        }
+
         /**
          * Process the payment and return the result
          **/
@@ -678,8 +691,6 @@ function woocommerce_paynext_init()
                 $transaction_id = $data["transaction_id"];
                 $reason = $data["reason"];
 
-                // Create the new cancel order URL with page 123
-                $new_cancel_url = home_url('/failed-payment/');
            
                 if ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
                     $redirecturl = $curlPost["success_url"];
@@ -708,7 +719,7 @@ function woocommerce_paynext_init()
                     $order->update_status($this->status_cancelled);
                     return array(
                         'result' => 'success',
-                        'redirect' => $order->get_cancel_order_url($new_cancel_url)
+                        'redirect' => $order->get_checkout_payment_url(true)
                     ); 
                 } else { // Pending
                     wc_add_notice( sprintf( __($reason) ), 'error' );
@@ -721,7 +732,7 @@ function woocommerce_paynext_init()
                     $order->update_status($this->status_pending);
                     return array(
                         'result' => 'success',
-                        'redirect' => $order->get_cancel_order_url($new_cancel_url)
+                        'redirect' => $order->get_checkout_payment_url(true)
                     );
                 }               
 
