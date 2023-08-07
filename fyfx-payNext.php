@@ -678,7 +678,6 @@ function woocommerce_paynext_init()
                 $transaction_id = $data["transaction_id"];
                 $reason = $data["reason"];
 
-                et the original cancel order URL
                 $original_cancel_url = $order->get_cancel_order_url();
 
                 // Create the new cancel order URL with page 123
