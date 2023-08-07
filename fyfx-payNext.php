@@ -678,6 +678,9 @@ function woocommerce_paynext_init()
                 $transaction_id = $data["transaction_id"];
                 $reason = $data["reason"];
 
+                $failed_payment_page_id = 343; // Replace this with the actual page ID of the custom thank you page
+                $redirect_url = get_permalink($failed_payment_page_id);
+
            
                 if ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
                     $redirecturl = $curlPost["success_url"];
@@ -705,8 +708,8 @@ function woocommerce_paynext_init()
                     
                     $order->update_status($this->status_cancelled);
                     return array(
-                        'result' => 'success',
-                        'redirect' => $this->get_return_url($order)
+                        'result' => 'failed',
+                        'redirect' => $redirect_url
                     ); 
                 } else { // Pending
                     wc_add_notice( sprintf( __($reason) ), 'error' );
@@ -718,8 +721,8 @@ function woocommerce_paynext_init()
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);
                     return array(
-                        'result' => 'success',
-                        'redirect' => $this->get_return_url($order)
+                        'result' => 'failed',
+                        'redirect' => $redirect_url
                     );
                 }               
 
