@@ -678,14 +678,8 @@ function woocommerce_paynext_init()
                 $transaction_id = $data["transaction_id"];
                 $reason = $data["reason"];
 
-                $original_cancel_url = $order->get_cancel_order_url();
-
                 // Create the new cancel order URL with page 123
                 $new_cancel_url = home_url('/failed-payment/');
-
-                // Set the new cancel order URL to the $order object
-                $order->cancel_order_url() = $new_cancel_url;
-
            
                 if ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
                     $redirecturl = $curlPost["success_url"];
@@ -714,7 +708,7 @@ function woocommerce_paynext_init()
                     $order->update_status($this->status_cancelled);
                     return array(
                         'result' => 'success',
-                        'redirect' => $order->get_cancel_order_url()
+                        'redirect' => $order->get_cancel_order_url($new_cancel_url)
                     ); 
                 } else { // Pending
                     wc_add_notice( sprintf( __($reason) ), 'error' );
@@ -727,7 +721,7 @@ function woocommerce_paynext_init()
                     $order->update_status($this->status_pending);
                     return array(
                         'result' => 'success',
-                        'redirect' => $order->get_cancel_order_url()
+                        'redirect' => $order->get_cancel_order_url($new_cancel_url)
                     );
                 }               
 
