@@ -684,7 +684,7 @@ function woocommerce_paynext_init()
                 $new_cancel_url = home_url('/failed-payment/');
 
                 // Set the new cancel order URL to the $order object
-                $order->cancel_order_url = $new_cancel_url;
+                $order->cancel_order_url() = $new_cancel_url;
 
            
                 if ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
