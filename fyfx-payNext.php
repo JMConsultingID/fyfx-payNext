@@ -679,7 +679,7 @@ function woocommerce_paynext_init()
                 $reason = $data["reason"];
 
                 $failed_payment_page_id = 343; // Replace this with the actual page ID of the custom thank you page
-                $redirect_url = get_permalink($failed_payment_page_id);
+                $redirect_url = "https://payment-staging.fundyourfx.com/failed-payment/";
 
            
                 if ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
@@ -707,10 +707,8 @@ function woocommerce_paynext_init()
                     $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
                     
                     $order->update_status($this->status_cancelled);
-                    return array(
-                        'result' => 'failed',
-                        'redirect' => $redirect_url
-                    ); 
+                    wp_safe_redirect( $redirect_url);
+                    exit; 
                 } else { // Pending
                     wc_add_notice( sprintf( __($reason) ), 'error' );
                     update_post_meta( $order_id, 'payment_status', $status_cc );
@@ -720,10 +718,8 @@ function woocommerce_paynext_init()
 
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);
-                    return array(
-                        'result' => 'failed',
-                        'redirect' => $redirect_url
-                    );
+                    wp_safe_redirect( $redirect_url );
+                    exit;
                 }               
 
             }
