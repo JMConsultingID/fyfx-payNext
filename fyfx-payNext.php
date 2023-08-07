@@ -677,6 +677,7 @@ function woocommerce_paynext_init()
                 $status_cc = $data["status"];
                 $transaction_id = $data["transaction_id"];
                 $reason = $data["reason"];
+                $url1 = 'https://payment-staging.fundyourfx.com/failed-payment/';
 
            
                 if ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
@@ -704,10 +705,7 @@ function woocommerce_paynext_init()
                     $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
                     
                     $order->update_status($this->status_cancelled);
-                    return array(
-                        'result' => 'failed',
-                        'redirect' => 'https://payment-staging.fundyourfx.com/failed-payment/'
-                    ); 
+                    wp_safe_redirect( $url1 );
                 } else { // Pending
                     wc_add_notice( sprintf( __($reason) ), 'error' );
                     update_post_meta( $order_id, 'payment_status', $status_cc );
@@ -717,18 +715,12 @@ function woocommerce_paynext_init()
 
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);
-                    return array(
-                        'result' => 'failed',
-                        'redirect' => 'https://payment-staging.fundyourfx.com/failed-payment/'
-                    );
+                    wp_safe_redirect( $url1 );
                 }               
 
             }
             update_post_meta($order_id, '_post_data', $_POST);
-            return array(
-                'result' => 'success',
-                'redirect' => 'https://payment-staging.fundyourfx.com/failed-payment/'
-            );
+            wp_safe_redirect( $url1 );
         }
         
        
