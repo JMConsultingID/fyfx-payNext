@@ -592,8 +592,8 @@ function woocommerce_paynext_init()
 
                 } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled                  
                     // Add a notice and link to go back to the previous checkout page
-                    wc_add_notice( sprintf( __('Payment Failed: Please Use 
-            Alternative Debit & Credit Card with Stripe Payment - Reason :  %s', 'fyfx-payNext'), $status_cc ), 'error' ); 
+                    wc_add_notice( sprintf( __('Payment Failed - Reason :  Card %s,   <p>Please Use 
+            Alternative Debit & Credit Card with Stripe Payment</p>', 'fyfx-payNext'), $status_cc ), 'error' ); 
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_cancelled);
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
@@ -602,8 +602,8 @@ function woocommerce_paynext_init()
                     return;
                 } else { // Pending
                     // Add a notice and link to go back to the previous checkout page
-                    wc_add_notice( sprintf( __('Payment Failed: Please Use 
-            Alternative Debit & Credit Card with Stripe Payment - Reason :  %s', 'fyfx-payNext'), $status_cc ), 'error' ); 
+                    wc_add_notice( sprintf( __('Payment Failed - Reason :  Card %s,   <p>Please Use 
+            Alternative Debit & Credit Card with Stripe Payment</p>', 'fyfx-payNext'), $status_cc ), 'error' );
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);                  
                     update_post_meta( $order_id, 'payment_status', $status_cc );
