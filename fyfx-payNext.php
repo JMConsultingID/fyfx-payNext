@@ -707,10 +707,6 @@ function woocommerce_paynext_init()
                     wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
                     
                     $order->update_status($this->status_cancelled);
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $order->get_checkout_payment_url(true)
-                    ); 
                 } else { // Pending
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
@@ -721,17 +717,13 @@ function woocommerce_paynext_init()
 
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $order->get_checkout_payment_url(true)
-                    );
                 }               
 
             }
             update_post_meta($order_id, '_post_data', $_POST);
             return array(
                 'result' => 'success',
-                'redirect' => $this->get_return_url($order)
+                'redirect' => $order->get_checkout_payment_url(true)
             );
         }
         
