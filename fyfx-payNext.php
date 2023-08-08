@@ -1083,17 +1083,4 @@ function run_paynext_js_script_response() {
 }
 add_action('wp_footer', 'run_paynext_js_script_response');
 
-function custom_checkout_payment_url_redirect($url, $order) {
-    // Set the page ID you want to redirect to
-    $redirect_page_id = 343;
-
-    // Get the URL of the page with the specified ID
-    $redirect_url = get_permalink($redirect_page_id);
-
-    // Return the custom redirect URL
-    return $redirect_url;
-}
-// Redirect WooCommerce checkout payment URL to page 123
-add_filter('woocommerce_get_checkout_payment_url', 'custom_checkout_payment_url_redirect', 10, 2);
-
 ?>
