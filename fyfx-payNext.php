@@ -606,18 +606,21 @@ function woocommerce_paynext_init()
                     foreach ( $items as $item ) {
                     $product_id = $item->get_product_id();
                         switch ( $product_id ) {
-                            case 36: //7132
-                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-starter/';
+                            case 71: //7132
+                                $checkout_url = 'https://payment-staging.fundyourfx.com/sellkit_step/setup-1/';
                                 break;
                             case 67: //7083
-                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-standard/';
+                                $checkout_url = 'https://payment-staging.fundyourfx.com/sellkit_step/setup-2/';
                                 break;
-                            case 71: //7133
-                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-professional/';
+                            case 63: //7133
+                                $checkout_url = 'https://payment-staging.fundyourfx.com/sellkit_step/setup-3/';
                                 break;
                             // Add more cases for other product IDs if needed
                         }
                         
+
+
+
                         // Add a notice and link to go back to the previous checkout page
                         wc_add_notice( 'Payment failed. Click <a href="' . esc_url( $checkout_url ) . '">here</a> to go back to the checkout page.', 'error' );
                         return array(
