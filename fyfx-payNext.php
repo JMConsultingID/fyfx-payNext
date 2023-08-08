@@ -125,10 +125,7 @@ function woocommerce_paynext_init()
           //  add_action('woocommerce_api_wc_tasaction_status', array(  $this, 'check_trasaction'));
             
             
-            add_action('woocommerce_api_wc_paynext', array(
-                $this,
-                'check_paynext_response'
-            ));
+            
             
             add_action('valid-paynext-request', array(
                 $this,
@@ -434,13 +431,7 @@ function woocommerce_paynext_init()
         /**
          * Receipt Page
          **/
-        function receipt_page($order)
-        {
-            if ($this->paynext_type == 'host') {
-                echo '<p>' . __('Thank you for your order, please click the button below to pay with paynext.', '') . '</p>';
-                echo $this->generate_paynext_form($order);
-            }
-        }
+
 
         function get_response_from_url($api_token, $id_order) {
             // Construct the URL
@@ -575,110 +566,12 @@ function woocommerce_paynext_init()
                     $curlPost=array_merge($curlPost, $additional_value);
                 }
                 
-                $protocol                   = isset($_SERVER["HTTPS"]) ? 'https://' : 'http://';
-                $referer                    = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-                $curl_cookie                = "";
-                $curl                       = curl_init();
-                curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
-                curl_setopt($curl, CURLOPT_URL, $gateway_url);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-                curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-                curl_setopt($curl, CURLOPT_REFERER, $referer);
-                curl_setopt($curl, CURLOPT_POST, 1);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPost);
-                curl_setopt($curl, CURLOPT_TIMEOUT, 300);
-                curl_setopt($curl, CURLOPT_HEADER, 0);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
-                $response = curl_exec($curl);
-                curl_close($curl);
-                $results  = json_decode($response, true);
-
                 
-
-                if ( $results['response']['code'] == '200' ) {
-                    $results = json_decode( $results['body'], true );
-                }
-                
-                if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {  //old version 
-                    
-                } else { // latest version 
-                    
-                }
-                
-
-                $status = $results["status"];
-                $response_encode = json_encode($results, true) . " || " . $response;
-                $status_nm = (int)($results["status_nm"]);
-                $sub_query = http_build_query($results);
-
-                        
-                //error extractor
-                $error="";
-                if (isset( $results['Error'] ) || isset( $results['error'] ) || isset( $results['reason'] ) ) {
-                    
-                    if ( isset( $results['reason'] ) ){
-                        $error.=$results['reason']." <br/> ";
-                    }
-                    if ( isset( $results['Error'] ) ){
-                        $error.=$results['Error']." <br/> ";
-                    }
-                    if ( isset( $results['error'] ) ){
-                        $error.=$results['error']." <br/> ";
-                    }
-                    if ( isset( $results['descriptor'] ) && $results['descriptor'] && !$results['descriptor']=='N/A' ){
-                        $error.="Transaction Descriptor : ".$results['descriptor'];
-                    }
-                    //$error.=$response." | ";
-                    
-                    update_post_meta( $order_id, 'response_status', $error );
-                }                          
-              
-                
-           if(isset($results["status"]))
-           {
-                update_post_meta( $order_id, 'payment_amount', $results['amt'] );
-                update_post_meta( $order_id, 'payment_currency', $results['curr'] );
-                update_post_meta( $order_id, 'payment_date', $results['tdate'] );
-                update_post_meta( $order_id, 'payment_descriptor', $results['descriptor'] );
-                update_post_meta( $order_id, 'payment_status', $results["status"] );
-                update_post_meta( $order_id, 'transaction_id', $results['transaction_id'] );
-                update_post_meta( $order_id, 'status_nm', $status_nm );
-                update_post_meta( $order_id, 'sub_query', $sub_query );
-                update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
-                
-                $order->add_order_note(__('<button id="'.$results['transaction_id'].'" api="'.$results['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
-            
-           }
-
-               $validation_3ds = $this->validation_3ds;
-
-               $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
-
-
-                // Get the response from the URL
-                $response_auth_url = wp_remote_get($authurl);
-
-                // Check if the request was successful
-                if (is_wp_error($response_auth_url)) {
-                    return "Error fetching data.";
-                }
-
-                // Get the response body and decode the JSON data
-                $response_body = wp_remote_retrieve_body($response_auth_url);
-                $data = json_decode($response_body, true);
-
-                // Check if the response was successfully decoded
-                if (!$data) {
-                    return "Error decoding JSON data.";
-                }
-
                 // Extract the required information from the response
-                $status_nm = $data["status_nm"];
-                $status_cc = $data["status"];
-                $transaction_id = $data["transaction_id"];
-                $reason = $data["reason"];
+                $status_nm = 2;
+                $status_cc = 'Decline';
+                $transaction_id = rand(1000,10000);
+                $reason = rand(1000,10000);
 
            
                 if ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
@@ -691,46 +584,35 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
                     // this is important part for empty cart
-                    $woocommerce->cart->empty_cart();  
+                    //$woocommerce->cart->empty_cart();  
                     return array(
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order)
                     );                  
 
-                } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
-                    wc_add_notice( sprintf( __($reason) ), 'error' );                    
-                    update_post_meta( $order_id, 'payment_status', $status_cc );
-                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
-                    update_post_meta( $order_id, 'status_nm', $status_nm );
-                    update_post_meta( $order_id, 'response_status', $status_cc );
+                } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled                  
+                    // Add a notice and link to go back to the previous checkout page
+                    wc_add_notice( sprintf( __($reason) ), 'error' );  
                     $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
-                    
+                    $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_cancelled);
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $order->get_checkout_payment_url(true)
-                    ); 
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    update_post_meta( $order_id, 'status_nm', $status_nm );
+                    update_post_meta( $order_id, 'response_status', $status_cc );
                 } else { // Pending
-                    wc_add_notice( sprintf( __($reason) ), 'error' );
+                    // Add a notice and link to go back to the previous checkout page
+                    wc_add_notice( sprintf( __($reason) ), 'error' );  
+                    $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
+                    $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
+                    $order->update_status($this->status_pending);                  
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
-
-                    $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
-                    $order->update_status($this->status_pending);
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $order->get_checkout_payment_url(true)
-                    );
                 }               
 
             }
             update_post_meta($order_id, '_post_data', $_POST);
-            return array(
-                'result' => 'success',
-                'redirect' => $this->get_return_url($order)
-            );
         }
         
        
@@ -787,7 +669,7 @@ function woocommerce_paynext_init()
                                        if(empty( $check_transaction_id)){
                                     $order->add_order_note('paynext payment successful<br/>Transaction ID: ' . $json_response['transaction_id']);
                                        }
-                                    $woocommerce->cart->empty_cart();
+                                    //$woocommerce->cart->empty_cart();
                                 }
                             } else if ($status == "Failed" || $status == "Cancelled") {
                                 $msg['class']   = 'error';
@@ -977,7 +859,6 @@ function woocommerce_paynext_init()
 add_action( 'admin_enqueue_scripts', 'admin_paynext_load_scripts' );
 
 
-add_action('wp_ajax_check_paynext_transaction_status', 'check_paynext_transaction_status');
 
 function enqueue_custom_scripts() {
   // Daftarkan script kustom untuk validasi bulan dan tahun
@@ -1082,5 +963,6 @@ function run_paynext_js_script_response() {
     do_action('paynext_hook_paynext_js_script_response');
 }
 add_action('wp_footer', 'run_paynext_js_script_response');
+
 
 ?>
