@@ -568,7 +568,7 @@ function woocommerce_paynext_init()
                 
                 
                 // Extract the required information from the response
-                $status_nm = 1;
+                $status_nm = 2;
                 $status_cc = 'Decline';
                 $transaction_id = rand(1000,10000);
                 $reason = rand(1000,10000);
