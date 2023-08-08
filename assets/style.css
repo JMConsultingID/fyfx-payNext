@@ -62,16 +62,46 @@ input.exp {
   font-size: 14px;
 }
 
+.payment_method_paynext-wrap{
+  padding: 0.35em 0.75em 0.625em!important;
+}
+
+/*.wc_payment_method.payment_method_paynext{
+  display: none!important;  
+}
+
+.hidden-form{
+  display: none!important;  
+}*/
+
+.wc-fyfx-form-wrap{
+    margin: 15px 0 0px 0!important;
+}
+
+.wc-fyfx-form-wrap label{
+    margin: 0px 0px 5px 0px!important;
+}
+
 .credit-card-input {
-    padding: 4px;
+    padding: 3px;
     border: 1px solid #ddd;
     background-color: #fff;
+}
+
+
+.elementor-widget-sellkit-checkout .credit-card-input{
+    padding: 3px;
 }
 
 .credit-card-input input {
   width: 50px!important;
   padding: 5px!important;
-  border: none;
+  border: none!important;
+}
+
+
+.sellkit_payment_box .credit-card-input input {
+  border: none!important;
 }
 
 .woocommerce form .form-row.woocommerce-invalid .credit-card-input{
@@ -106,4 +136,11 @@ input.exp {
     border: 1px solid #ddd;
     background-color: #fff;
     outline: 0;
+}
+.wc-fyfx-form-field::placeholder{
+  color: #828282;
+}
+
+.wc-fyfx-form-wrap span.slasher{
+  color: #ddd;
 }

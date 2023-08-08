@@ -1,18 +1,78 @@
 <?php 
+/**
+ * The plugin bootstrap file
+ *
+ * This file is read by WordPress to generate the plugin information in the plugin
+ * admin area. This file also includes all of the dependencies used by the plugin,
+ * registers the activation and deactivation functions, and defines a function
+ * that starts the plugin.
+ *
+ * @link              https://fundyourfx.com
+ * @since             1.0.0
+ * @package           Fyfx_PayNext
+ *
+ * @wordpress-plugin
+ * Plugin Name:       A - FYFX x PayNext Gateway WooCommerce
+ * Plugin URI:        https://fundyourfx.com
+ * Description:       FYFX x PayNext Payment Gateway for WooCommerce
+ * Version:           1.2.0
+ * Author:            Ardi JM (Editor) | Original By PayNext 
+ * Author URI:        https://fundyourfx.com
+ * License:           GPL-2.0+
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain:       fyfx-payNext
+ * Domain Path:       /languages
+ */
 
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+    die;
+}
 
-/*
-Plugin Name: A - FYFX x PayNext Payment Gateway for WooCommerce
-Plugin URI: 
-Description: FYFX WooCommerce with paynext payment gateway.
-Version: 1.2
-
-*/
 include_once('woo-check-card-class.php');
 
 if (!defined('ABSPATH'))
     exit;
 add_action('plugins_loaded', 'woocommerce_paynext_init', 0);
+
+if (!function_exists('is_plugin_active')) {
+    include_once(ABSPATH . '/wp-admin/includes/plugin.php');
+}
+
+/**
+* Check for the existence of WooCommerce and any other requirements
+*/
+function fyfx_paynext_check_requirements() {
+    if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
+        return true;
+    } else {
+        add_action( 'admin_notices', 'fyfx_paynext_missing_wc_notice' );
+        return false;
+    }
+}
+
+/**
+* Display a message advising WooCommerce is required
+*/
+function fyfx_paynext_missing_wc_notice() { 
+    $class = 'notice notice-error';
+    $message = __( 'FYFX Propfirm User requires WooCommerce to be installed and active.', 'fyfx-propfirm-user' );
+ 
+    printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) ); 
+}
+
+add_action( 'plugins_loaded', 'fyfx_paynext_check_requirements' );
+
+function filter_action_fyfx_paynext_links( $links ) {
+     $links['settings'] = '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paynext' ) . '">' . __( 'Settings', 'fyfx-propfirm-user' ) . '</a>';
+     $links['support'] = '<a href="https://portal.online-epayment.com/developers.do"  target="_blank">' . __( 'Doc', 'fyfx-propfirm-user' ) . '</a>';
+     // if( class_exists( 'Fyfx_Payment' ) ) {
+     //  $links['upgrade'] = '<a href="https://fundyourfx.com">' . __( 'Upgrade', 'fyfx-propfirm-user' ) . '</a>';
+     // }
+     return $links;
+}
+add_filter( 'plugin_action_links_fyfx-payNext/fyfx-payNext.php', 'filter_action_fyfx_paynext_links', 10, 1 );
+
 function woocommerce_paynext_init()
 {
     if (!class_exists('WC_Payment_Gateway'))
@@ -30,7 +90,8 @@ function woocommerce_paynext_init()
         {
             // Go wild in here
             $this->id           = 'paynext';
-            $this->method_title = __('payNext');
+            $this->method_title = __('FYFX x PayNext Gateway');
+            $this->method_description = __('FYFX Plugin Payment Woocomerce using API payNext Gateway');
             $this->has_fields   = true;
             $this->init_form_fields();
             $this->init_settings();
@@ -53,6 +114,7 @@ function woocommerce_paynext_init()
             $this->transaction_url        = $this->settings['transaction_url'];
             
             $this->paynext_type   = $this->settings['paynext_type'];
+            $this->validation_3ds   = $this->settings['validation_3ds'];
             $this->status_completed = $this->settings['status_completed'];
             $this->status_cancelled = $this->settings['status_cancelled'];
             $this->status_pending   = $this->settings['status_pending'];
@@ -152,6 +214,19 @@ function woocommerce_paynext_init()
                         'host' => __('Payment Gateway (Re-Direct)', '')
                     )
                 ),
+
+                'validation_3ds' => array(
+                    'title' => __('3DS Validation', ''),
+                    'default' => 'no',
+                    'type' => 'select',
+                        'class' => 'ao1_paynext hide',
+                        'css' => 'display:none;',
+                    'options' => array(
+                        'yes' => __('3DS Validation A', ''),
+                        'no' => __('3DS Validation B', '')
+                    )
+                ),
+
                 'title' => array(
                     'title' => __('Title:', ''),
                     'type' => 'text',
@@ -311,7 +386,8 @@ function woocommerce_paynext_init()
             } else {
                 $billing_creditcard_paynext = isset($_REQUEST['billing_creditcard_paynext']) ? esc_attr($_REQUEST['billing_creditcard_paynext']) : '';
 		?>
-       <div class="form-row form-row-wide validate-required" style="margin:15px 0 0 0;">
+       <div class="payment_method_paynext-wrap">
+       <div class="form-row form-row-wide wc-fyfx-form-wrap validate-required">
             <?php
                 $card_number_field_placeholder = __('Card Number', 'woocommerce');
 ?>            
@@ -320,46 +396,37 @@ function woocommerce_paynext_init()
 ?> <span class="required">*</span></label>
             <input class="input-text check_creditcard wc-fyfx-form-field" type="text" size="19" maxlength="19" name="billing_creditcard_paynext" value="<?php
                 echo $billing_creditcard_paynext;
-?>" placeholder="<?php   echo $card_number_field_placeholder; ?>" style="margin:15px 0 0 0;" />
+?>" placeholder="1234 1234 1234 1234" />
 
 
 
         </div>         
           
         <div class="clear"></div>
-        <div class="form-row form-row-first validate-required">
+        <div class="form-row form-row-first wc-fyfx-form-wrap validate-required">
             <label><?php
-                _e('Expiration Date', 'woocommerce');
-?> <span class="required">*</span></label>
+                _e('Expiry Date', 'woocommerce');?> <span class="required">*</span></label>
             <div class="credit-card-input">
     <input name="billing_expdatemonth_paynext" type="text" class="input-text wc-fyfx-form-field" id="expMonth" placeholder="MM" maxlength="2">
-    <span>/</span>
+    <span class="slasher">/</span>
     <input name="billing_expdateyear_paynext" type="text" class="input-text wc-fyfx-form-field" id="expYear" placeholder="YY" maxlength="2">
   </div>
 
   <div id="errorContainer" class="error-message"></div>
                    
         </div>
-        <div class="form-row form-row-last validate-required">
+        <div class="form-row form-row-last wc-fyfx-form-wrap validate-required">
             <?php
-                $cvv_field_placeholder = __('Card Verification Number (CVV)', 'woocommerce');
+                $cvv_field_placeholder = __('Card Code (CVC)', 'woocommerce');
 ?>
            <label><?php
-                _e('Card Verification Number (CVV)', 'woocommerce');
+                _e('CVC', 'woocommerce');
 ?> <span class="required">*</span></label>
-            <input class="input-text wc-fyfx-form-field" type="text" size="4" maxlength="4" name="billing_ccvnumber_paynext" value="" placeholder="<?php
-                echo $cvv_field_placeholder;
-?>" />
+            <input class="input-text wc-fyfx-form-field" type="text" size="4" maxlength="4" name="billing_ccvnumber_paynext" value="" placeholder="CVC" />
         </div>
 
-
-
-
-
-      
-        
-
 <div class="clear"></div>
+</div>
         
         <?php
             }
@@ -374,6 +441,45 @@ function woocommerce_paynext_init()
                 echo $this->generate_paynext_form($order);
             }
         }
+
+        function get_response_from_url($api_token, $id_order) {
+            // Construct the URL
+            $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $api_token . "&id_order=" . $id_order;
+
+            // Get the response from the URL
+            $response = wp_remote_get($authurl);
+
+            // Check if the request was successful
+            if (is_wp_error($response)) {
+                return "Error fetching data.";
+            }
+
+            // Get the response body and decode the JSON data
+            $response_body = wp_remote_retrieve_body($response);
+            $data = json_decode($response_body, true);
+
+            // Check if the response was successfully decoded
+            if (!$data) {
+                return "Error decoding JSON data.";
+            }
+
+            // Extract the required information from the response
+            $status_nm = $data["status_nm"];
+            $status = $data["status"];
+            $transaction_id = $data["transaction_id"];
+            $reason = $data["reason"];
+
+            // Return the required response values as an associative array
+            return array(
+                'status_nm' => $status_nm,
+                'status' => $status,
+                'transaction_id' => $transaction_id,
+                'reason' => $reason,
+            );
+        }
+
+        
+
         /**
          * Process the payment and return the result
          **/
@@ -405,6 +511,7 @@ function woocommerce_paynext_init()
                 $gateway_url                =  implode('/', explode('/', $this->transaction_url, -1))."/directapi.do";
 				
                 $curlPost                   = array();
+                $country=$order->get_billing_country();
                 //<!--Replace of 3 very important parameters * your product API code -->
                 $curlPost["checkout_language"]      = $this->checkout_language; // language converter  
                 $curlPost["api_token"]      = $this->api_token; // WEBSITE API TOKEN 
@@ -421,19 +528,22 @@ function woocommerce_paynext_init()
                 //<!--billing details of .* customer -->
                 //$curlPost["ccholder"]       = $order->billing_first_name;
                 //$curlPost["ccholder_lname"] = $order->billing_last_name;
+                $billing_address_1=$order->billing_address_1;
+                if(empty($billing_address_1)){$billing_address_1=$country;}
+
 				$curlPost["fullname"] = $order->billing_first_name. " " .$order->billing_last_name;
                 $curlPost["email"]          = $order->billing_email;
-                $curlPost["bill_street_1"]  = $order->billing_address_1;
-                $curlPost["bill_street_2"]  = $order->billing_address_2;
-                $curlPost["bill_city"]      = $order->billing_city;
-                $curlPost["bill_state"]     = $order->billing_state;
-				$country=$order->get_billing_country();
+                $curlPost["bill_street_1"]  = $billing_address_1;
+                $curlPost["bill_street_2"]  = $billing_address_1;
+                $curlPost["bill_city"]      = $country;
+                $curlPost["bill_state"]     = $country;
+				
 				
 				$billing_phone=$order->billing_phone;
 				if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
                 
 				$curlPost["bill_country"]   = $country;
-                $curlPost["bill_zip"]       = $order->billing_postcode;
+                $curlPost["bill_zip"]       = "0000";
                 $curlPost["bill_phone"]     = $billing_phone;
                 $curlPost["id_order"]       = $order_id;
 
@@ -484,7 +594,9 @@ function woocommerce_paynext_init()
                 $response = curl_exec($curl);
 				curl_close($curl);
                 $results  = json_decode($response, true);
-				
+
+                
+
 				if ( $results['response']['code'] == '200' ) {
 					$results = json_decode( $results['body'], true );
 				}
@@ -495,10 +607,13 @@ function woocommerce_paynext_init()
 					
 				}
 				
-                $status   = $results["status"];
-				
-                $response_encode =  json_encode( $results , true) . " || " . $response ; 
-				
+
+                $status = $results["status"];
+                $response_encode = json_encode($results, true) . " || " . $response;
+                $status_nm = (int)($results["status_nm"]);
+                $sub_query = http_build_query($results);
+
+               			
 				//error extractor
 				$error="";
 				if (isset( $results['Error'] ) || isset( $results['error'] ) || isset( $results['reason'] ) ) {
@@ -517,81 +632,106 @@ function woocommerce_paynext_init()
 					}
 					//$error.=$response." | ";
 					
-					update_post_meta( $order_id, 'error', $error );
-				}
-				
-                
-               
+					update_post_meta( $order_id, 'response_status', $error );
+				}				           
               
                 
            if(isset($results["status"]))
            {
-             update_post_meta( $order_id, 'payment_amount', $results['amt'] );
-            update_post_meta( $order_id, 'payment_currency', $results['curr'] );
-            update_post_meta( $order_id, 'payment_date', $results['tdate'] );
-            update_post_meta( $order_id, 'payment_descriptor', $results['descriptor'] );
-            update_post_meta( $order_id, 'payment_status', $results["status"] );
-            update_post_meta( $order_id, 'transaction_id', $results['transaction_id'] );
-            
-            
-            $order->add_order_note(__('<button id="'.$results['transaction_id'].'" api="'.$results['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
+                update_post_meta( $order_id, 'payment_amount', $results['amt'] );
+                update_post_meta( $order_id, 'payment_currency', $results['curr'] );
+                update_post_meta( $order_id, 'payment_date', $results['tdate'] );
+                update_post_meta( $order_id, 'payment_descriptor', $results['descriptor'] );
+                update_post_meta( $order_id, 'payment_status', $results["status"] );
+                update_post_meta( $order_id, 'transaction_id', $results['transaction_id'] );
+                update_post_meta( $order_id, 'status_nm', $status_nm );
+                update_post_meta( $order_id, 'sub_query', $sub_query );
+                update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
+                
+                $order->add_order_note(__('<button id="'.$results['transaction_id'].'" api="'.$results['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
             
            }
-                 
-                 
-                 
-             
-                 
-                
-                
-                if ($status == "Completed" || $status == "Success" || $status == "Test" || $status == "Test Transaction") {
-                    // Payment successful
+
+               $validation_3ds = $this->validation_3ds;
+
+               $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
+
+
+                // Get the response from the URL
+                $response_auth_url = wp_remote_get($authurl);
+
+                // Check if the request was successful
+                if (is_wp_error($response_auth_url)) {
+                    return "Error fetching data.";
+                }
+
+                // Get the response body and decode the JSON data
+                $response_body = wp_remote_retrieve_body($response_auth_url);
+                $data = json_decode($response_body, true);
+
+                // Check if the response was successfully decoded
+                if (!$data) {
+                    return "Error decoding JSON data.";
+                }
+
+                // Extract the required information from the response
+                $status_nm = $data["status_nm"];
+                $status_cc = $data["status"];
+                $transaction_id = $data["transaction_id"];
+                $reason = $data["reason"];
+
+           
+                if ($status_nm == 1 || $status_nm == 9) { // 1:Approved/Success, 9:Test Transaction
+                    $redirecturl = $curlPost["success_url"];
                     $order->add_order_note(__('paynext  complete payment.', ''));
                     $order->payment_complete();
                     $order->update_status($this->status_completed);
+                    update_post_meta( $order_id, 'payment_status', $status_cc );
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    update_post_meta( $order_id, 'status_nm', $status_nm );
+                    update_post_meta( $order_id, 'response_status', $status_cc );
                     // this is important part for empty cart
-                    $woocommerce->cart->empty_cart();
-                    // Redirect to thank you page
+                    $woocommerce->cart->empty_cart();  
                     return array(
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order)
-                    );
-                } else if ($status == "Failed" || $status == "Cancelled") {
-               
-                    
-					$reason="";
-					if ( isset( $results['reason'] ) ){
-						$reason.=$results['reason']." ";
-					}
-					
-                     wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
-                    
-                    
+                    );                  
+
+                } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
+                    wc_add_notice( sprintf( __($reason) ), 'error' );                    
+                    update_post_meta( $order_id, 'payment_status', $status_cc );
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    update_post_meta( $order_id, 'status_nm', $status_nm );
+                    update_post_meta( $order_id, 'response_status', $status_cc );
                     $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
-					
-                    $order->update_status($this->status_cancelled);
-                } else {
-                    //transaction error or pending 
-                    //if($error
-						
-						if ( isset( $results['reason'] ) ){
-							$error .= $results['reason']." ";
-						}
-					
-						wc_add_notice( sprintf( __($error.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
-						$order->add_order_note('cError: ' . $error . "log: " . $response_encode );
-						$order->update_status($this->status_pending);
-					//}
                     
-                }
+                    $order->update_status($this->status_cancelled);
+                    return array(
+                        'result' => 'success',
+                        'redirect' => $order->get_checkout_payment_url(true)
+                    ); 
+                } else { // Pending
+                    wc_add_notice( sprintf( __($reason) ), 'error' );
+                    update_post_meta( $order_id, 'payment_status', $status_cc );
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    update_post_meta( $order_id, 'status_nm', $status_nm );
+                    update_post_meta( $order_id, 'response_status', $status_cc );
+
+                    $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
+                    $order->update_status($this->status_pending);
+                    return array(
+                        'result' => 'success',
+                        'redirect' => $order->get_checkout_payment_url(true)
+                    );
+                }               
+
             }
             update_post_meta($order_id, '_post_data', $_POST);
             return array(
                 'result' => 'success',
-                'redirect' => $order->get_checkout_payment_url(true)
+                'redirect' => $this->get_return_url($order)
             );
         }
-        
         
        
         
@@ -637,7 +777,7 @@ function woocommerce_paynext_init()
                         }
                         $order_status = $json_response['status'];
                         if ($order->get_status() !== 'Completed') {
-                            if ($order_status == "Completed" || $order_status == "Success" || $order_status == "Test" || $order_status == "Test Transaction") {
+                            if ($order_status == "Completed" || $order_status == "Success" || $order_status == "Test" || $order_status == "Test Transaction"|| $order_status == "Approved" || $status == "Scrubbed") {
                                 $transauthorised = true;
                                 $msg['message']  = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be shipping your order to you soon.";
                                 $msg['class']    = 'success';
@@ -686,6 +826,10 @@ function woocommerce_paynext_init()
             wp_redirect($redirect_url);
             exit;
         }
+
+
+        
+
         /*
       
         
@@ -765,7 +909,7 @@ function woocommerce_paynext_init()
 				$billing_phone=$order->billing_phone;
 				if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
 				$paynext_args_array[] = '<input type="hidden" name="bill_country" value="' .$country. '"/>';
-                $paynext_args_array[] = '<input type="hidden" name="bill_zip" value="' . @$order->billing_postcode . '"/>';
+                $paynext_args_array[] = '<input type="hidden" name="bill_zip" value="0000"/>';
                 $paynext_args_array[] = '<input type="hidden" name="bill_phone" value="' . $billing_phone . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="id_order" value="' . $order_id . '"/>';
                
@@ -880,6 +1024,76 @@ function check_paynext_transaction_status(){
 
 }
 
+// Function to trigger the 'before_page_content' action hook
+function add_notice_content_shortcode() {
+    ob_start();
+    do_action('add_notice_content');
+    return ob_get_clean();
+}
+add_shortcode('add_notice_content_shortcode', 'add_notice_content_shortcode');
 
+// Menampilkan pemberitahuan pada halaman "Thank You"
+function display_order_payment_notices() {
+    if (function_exists('wc_print_notices')) {
+        wc_print_notices();
+    }
+}
+add_action('add_notice_content', 'display_order_payment_notices');
+
+// Additional Script Response
+function paynext_js_script_response() {
+    // Display API response header in inspect element
+    $current_url = $_SERVER['REQUEST_URI'];
+    if (strpos($current_url, '/checkout/order-received/') !== false){
+        $order_id = absint(get_query_var('order-received'));
+        $api_paynext = get_post_meta($order_id, 'response_status', true);
+        ?>
+        <script>
+            var paynextResponse = <?php echo json_encode($api_paynext); ?>;
+            console.log(paynextResponse);
+        </script>
+        <?php
+    }
+    elseif (strpos($current_url, '/sellkit_step/') !== false && strpos($current_url, '?order-key=wc_order') !== false) {
+        $key = isset( $_GET['order-key'] ) ? sanitize_text_field( $_GET['order-key'] ) : false;
+        $current_page_id = get_queried_object_id();
+        if ( empty( $key ) ) {
+            return;
+        }
+        if ( $key ) {
+            $order_id = wc_get_order_id_by_order_key( $key );
+        }
+        $api_paynext = get_post_meta($order_id, 'response_status', true);
+        ?>
+        <script>
+            var paynextResponse = <?php echo json_encode($api_paynext); ?>;
+            console.log(paynextResponse);
+        </script>
+        <?php
+    }
+    else{
+        return;
+    }
+}
+do_action('paynext_hook_paynext_js_script_response');
+add_action('paynext_hook_paynext_js_script_response', 'paynext_js_script_response');
+
+function run_paynext_js_script_response() {
+    do_action('paynext_hook_paynext_js_script_response');
+}
+add_action('wp_footer', 'run_paynext_js_script_response');
+
+function custom_checkout_payment_url_redirect($url, $order) {
+    // Set the page ID you want to redirect to
+    $redirect_page_id = 343;
+
+    // Get the URL of the page with the specified ID
+    $redirect_url = get_permalink($redirect_page_id);
+
+    // Return the custom redirect URL
+    return $redirect_url;
+}
+// Redirect WooCommerce checkout payment URL to page 123
+add_filter('woocommerce_get_checkout_payment_url', 'custom_checkout_payment_url_redirect', 10, 2);
 
 ?>
