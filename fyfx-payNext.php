@@ -620,7 +620,10 @@ function woocommerce_paynext_init()
                         
                         // Add a notice and link to go back to the previous checkout page
                         wc_add_notice( 'Payment failed. Click <a href="' . esc_url( $checkout_url ) . '">here</a> to go back to the checkout page.', 'error' );
-                        return;
+                        return array(
+                            'result' => 'success',
+                            'redirect' => $checkout_url
+                        );
                     }
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );             
                     $order->update_status($this->status_cancelled);
@@ -653,7 +656,10 @@ function woocommerce_paynext_init()
                         
                         // Add a notice and link to go back to the previous checkout page
                         wc_add_notice( 'Payment failed. Click <a href="' . esc_url( $checkout_url ) . '">here</a> to go back to the checkout page.', 'error' );
-                        return;
+                        return array(
+                            'result' => 'success',
+                            'redirect' => $checkout_url
+                        );
                     } 
 
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
