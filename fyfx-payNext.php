@@ -698,32 +698,82 @@ function woocommerce_paynext_init()
                     );                  
 
                 } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled                  
+                    // Remove the action that empties the cart
+                    remove_action( 'woocommerce_order_status_pending_to_processing', 'wc_empty_cart', 1 );
+                    remove_action( 'woocommerce_order_status_pending_to_completed', 'wc_empty_cart', 1 );
+                    remove_action( 'woocommerce_order_status_pending_to_on-hold', 'wc_empty_cart', 1 );
+
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
                     $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
 
-                    wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
-
+                    $items = $order->get_items();
+                    foreach ( $items as $item ) {
+                    $product_id = $item->get_product_id();
+                    $product = wc_get_product( $product_id );
+                    if ( $product ) {
+                        $checkout_url = get_checkout_url();
+                        
+                        // Check the product ID and set the appropriate checkout URL
+                        switch ( $product_id ) {
+                            case 36: //7132
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-starter/';
+                                break;
+                            case 67: //7083
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-standard/';
+                                break;
+                            case 71: //7133
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-professional/';
+                                break;
+                            // Add more cases for other product IDs if needed
+                        }
+                        
+                        // Add a notice and link to go back to the previous checkout page
+                        wc_add_notice( 'Payment failed. Click <a href="' . esc_url( $checkout_url ) . '">here</a> to go back to the checkout page.', 'error' );
+                        return;
+                    }
+                    }
+                    $order->add_order_note('cError: ' . $error . "log: " . $response_encode );             
+                    $order->update_status($this->status_cancelled);
+                } else { // Pending
                     // Remove the action that empties the cart
                     remove_action( 'woocommerce_order_status_pending_to_processing', 'wc_empty_cart', 1 );
                     remove_action( 'woocommerce_order_status_pending_to_completed', 'wc_empty_cart', 1 );
                     remove_action( 'woocommerce_order_status_pending_to_on-hold', 'wc_empty_cart', 1 );
-                    
-                    $order->update_status($this->status_cancelled);
-                } else { // Pending
+
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
 
-                    // Remove the action that empties the cart
-                    remove_action( 'woocommerce_order_status_pending_to_processing', 'wc_empty_cart', 1 );
-                    remove_action( 'woocommerce_order_status_pending_to_completed', 'wc_empty_cart', 1 );
-                    remove_action( 'woocommerce_order_status_pending_to_on-hold', 'wc_empty_cart', 1 );
-
-                    wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
+                    $items = $order->get_items();
+                    foreach ( $items as $item ) {
+                    $product_id = $item->get_product_id();
+                    $product = wc_get_product( $product_id );
+                    if ( $product ) {
+                        $checkout_url = get_checkout_url();
+                        
+                        // Check the product ID and set the appropriate checkout URL
+                        switch ( $product_id ) {
+                            case 36: //7132
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-starter/';
+                                break;
+                            case 67: //7083
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-standard/';
+                                break;
+                            case 71: //7133
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-professional/';
+                                break;
+                            // Add more cases for other product IDs if needed
+                        }
+                        
+                        // Add a notice and link to go back to the previous checkout page
+                        wc_add_notice( 'Payment failed. Click <a href="' . esc_url( $checkout_url ) . '">here</a> to go back to the checkout page.', 'error' );
+                        return;
+                    }
+                    }  
 
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);
