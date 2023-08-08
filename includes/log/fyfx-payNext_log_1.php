@@ -96,18 +96,18 @@ function woocommerce_paynext_init()
             $this->init_form_fields();
             $this->init_settings();
           
-          
-          
-           if ($this->settings['logo']=="yes"){         
-                $this->icon = woocommerce_plugin_url_paynext . '/img/visamastjcb.png';
-            }
-            
-            
-            
-            $this->title            = $this->settings['title'];
-            
-            $this->description      = $this->settings['description'];
-            
+		  
+		  
+		   if ($this->settings['logo']=="yes"){			
+				$this->icon = woocommerce_plugin_url_paynext . '/img/visamastjcb.png';
+			}
+			
+			
+			
+			$this->title            = $this->settings['title'];
+			
+			$this->description      = $this->settings['description'];
+			
             $this->api_token        = $this->settings['api_token'];
             $this->website_id         = $this->settings['website_id'];
             
@@ -134,10 +134,10 @@ function woocommerce_paynext_init()
                 $this,
                 'successful_request'
             ));
-            
+			
             add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
-            
-            add_action( 'admin_enqueue_scripts', 'admin_paynext_load_scripts' );
+			
+			add_action( 'admin_enqueue_scripts', 'admin_paynext_load_scripts' );
             
            
             
@@ -170,8 +170,8 @@ function woocommerce_paynext_init()
                     'label' => __('Payment Module.', ''),
                     'default' => 'no'
                 ),
-                
-                'website_id' => array(
+				
+				'website_id' => array(
                     'title' => __('WEBSITE ID', ''),
                     'type' => 'text',
                     'description' => __('', '')
@@ -182,33 +182,33 @@ function woocommerce_paynext_init()
                     'description' => __('.', '')
                 ),
 
-                'transaction_url' => array(
+				'transaction_url' => array(
                     'title' => __('TRANSACTION URL', ''),
                     'type' => 'text',
                     'description' => __('', '')
                 ),
 
-                'additional_option' => array(
+				'additional_option' => array(
                     'title' => __('Additional Options', ''), 
-                    'default' => 'Additional Options',
+					'default' => 'Additional Options',
                     'type' => 'title',
-                    
-                    //'type' => 'button',
-                    'custom_attributes' => array(
-                        //'onclick' => "woocommerce_addvalf();",
-                    ),
-                    'css'  => 'color: #032279;text-align:center;font-weight:bold;font-size:16px;padding:10px 0;height:50px;',
-                    'class' => 'button-secondary addButtonId_paynext',
-                    'id'       => 'woocommerce_addButtonId_paynext',
+					
+					//'type' => 'button',
+					'custom_attributes' => array(
+						//'onclick' => "woocommerce_addvalf();",
+					),
+					'css'  => 'color: #032279;text-align:center;font-weight:bold;font-size:16px;padding:10px 0;height:50px;',
+					'class' => 'button-secondary addButtonId_paynext',
+					'id'       => 'woocommerce_addButtonId_paynext',
                     'desc' => __('The following options are default.', '')
                 ),
-                
+				
                 'paynext_type' => array(
                     'title' => __('Payment Type', ''),
                     'default' => 'host',
                     'type' => 'select',
-                        'class' => 'ao1_paynext hide',
-                        'css' => 'display:none;',
+						'class' => 'ao1_paynext hide',
+						'css' => 'display:none;',
                     'options' => array(
                         'card' => __('Card Payment Gateway (Direct by Curl)', ''),
                         'host' => __('Payment Gateway (Re-Direct)', '')
@@ -230,33 +230,33 @@ function woocommerce_paynext_init()
                 'title' => array(
                     'title' => __('Title:', ''),
                     'type' => 'text',
-                        'class' => 'ao1_paynext hide',
-                        'css' => 'display:none;',
+						'class' => 'ao1_paynext hide',
+						'css' => 'display:none;',
                     'description' => __('Process secure payment by Credit Card & Crypto eWallet', ''),
                     'default' => __('Credit Card & Crypto eWallet', '')
                 ),
-                'logo' => array(
+				'logo' => array(
                     'title' => __('Display Icon:', ''),
                     'type' => 'Checkbox', 
-                        'class' => 'ao1_paynext dispIcon1_paynext hide',
-                        'css' => 'display:none;',
+						'class' => 'ao1_paynext dispIcon1_paynext hide',
+						'css' => 'display:none;',
                     'description' => __('This controls the title which the user sees during checkout.', ''),
                     'default' => __('paynext', '')
                 ),
                 'description' => array(
                     'title' => __('Description:', ''),
                     'type' => 'textarea', 
-                        'class' => 'ao1_paynext hide',
-                        'css' => 'display:none;',
+						'class' => 'ao1_paynext hide',
+						'css' => 'display:none;',
                     'description' => __('This controls the description which the user sees during checkout.', ''),
                     'default' => __('Pay  Credit card  through paynext Secure Servers.', '')
                 ),
-                'status_completed' => array(
+				'status_completed' => array(
                     'title' => __('If Completed/Successfull/Test Transaction', ''),
                     'default' => 'completed',
                     'type' => 'select', 
-                        'class' => 'ao1_paynext hide',
-                        'css' => 'display:none;',
+						'class' => 'ao1_paynext hide',
+						'css' => 'display:none;',
                     'options' => array(
                         'pending' => __('Pending payment', ''),
                         'processing' => __('Processing', ''),
@@ -271,8 +271,8 @@ function woocommerce_paynext_init()
                     'title' => __('If Cancelled/Failed', ''),
                     'default' => 'cancelled',
                     'type' => 'select', 
-                        'class' => 'ao1_paynext hide',
-                        'css' => 'display:none;',
+						'class' => 'ao1_paynext hide',
+						'css' => 'display:none;',
                     'options' => array(
                         'pending' => __('Pending payment', ''),
                         'processing' => __('Processing', ''),
@@ -287,8 +287,8 @@ function woocommerce_paynext_init()
                     'title' => __('If Any error/ No Response', ''),
                     'default' => 'failed',
                     'type' => 'select', 
-                        'class' => 'ao1_paynext hide',
-                        'css' => 'display:none;',
+						'class' => 'ao1_paynext hide',
+						'css' => 'display:none;',
                     'options' => array(
                         'pending' => __('Pending payment', ''),
                         'processing' => __('Processing', ''),
@@ -299,21 +299,21 @@ function woocommerce_paynext_init()
                         'failed' => __('Failed', '')
                     )
                 ),
-                'checkout_language' => array(
+				'checkout_language' => array(
                     'title' => __('Checkout Language', ''),
                     'default' => 'en',
                     'type' => 'select', 
-                        'class' => 'ao1_paynext hide',
-                        'css' => 'display:none;',
+						'class' => 'ao1_paynext hide',
+						'css' => 'display:none;',
                     'options' => array(
                         'en' => __('English', ''),'af' => __('Afrikaans', ''),'sq' => __('Albanian', ''),'am' => __('Amharic', ''),'ar' => __('Arabic', ''),'hy' => __('Armenian', ''),'az' => __('Azerbaijani', ''),'eu' => __('Basque', ''),'be' => __('Belarusian', ''),'bn' => __('Bengali', ''),'bs' => __('Bosnian', ''),'bg' => __('Bulgarian', ''),'ca' => __('Catalan', ''),'ceb' => __('Cebuano', ''),'ny' => __('Chichewa', ''),'zh-CN' => __('Chinese (Simplified)', ''),'zh-TW' => __('Chinese (Traditional)', ''),'co' => __('Corsican', ''),'hr' => __('Croatian', ''),'cs' => __('Czech', ''),'da' => __('Danish', ''),'nl' => __('Dutch', ''),'eo' => __('Esperanto', ''),'et' => __('Estonian', ''),'tl' => __('Filipino', ''),'fi' => __('Finnish', ''),'fr' => __('French', ''),'fy' => __('Frisian', ''),'gl' => __('Galician', ''),'ka' => __('Georgian', ''),'de' => __('German', ''),'el' => __('Greek', ''),'gu' => __('Gujarati', ''),'ht' => __('Haitian Creole', ''),'ha' => __('Hausa', ''),'haw' => __('Hawaiian', ''),'iw' => __('Hebrew', ''),'hi' => __('Hindi', ''),'hmn' => __('Hmong', ''),'hu' => __('Hungarian', ''),'is' => __('Icelandic', ''),'ig' => __('Igbo', ''),'id' => __('Indonesian', ''),'ga' => __('Irish', ''),'it' => __('Italian', ''),'ja' => __('Japanese', ''),'jw' => __('Javanese', ''),'kn' => __('Kannada', ''),'kk' => __('Kazakh', ''),'km' => __('Khmer', ''),'rw' => __('Kinyarwanda', ''),'ko' => __('Korean', ''),'ku' => __('Kurdish (Kurmanji)', ''),'ky' => __('Kyrgyz', ''),'lo' => __('Lao', ''),'la' => __('Latin', ''),'lv' => __('Latvian', ''),'lt' => __('Lithuanian', ''),'lb' => __('Luxembourgish', ''),'mk' => __('Macedonian', ''),'mg' => __('Malagasy', ''),'ms' => __('Malay', ''),'ml' => __('Malayalam', ''),'mt' => __('Maltese', ''),'mi' => __('Maori', ''),'mr' => __('Marathi', ''),'mn' => __('Mongolian', ''),'my' => __('Myanmar (Burmese)', ''),'ne' => __('Nepali', ''),'no' => __('Norwegian', ''),'or' => __('Odia (Oriya)', ''),'ps' => __('Pashto', ''),'fa' => __('Persian', ''),'pl' => __('Polish', ''),'pt' => __('Portuguese', ''),'pa' => __('Punjabi', ''),'ro' => __('Romanian', ''),'ru' => __('Russian', ''),'sm' => __('Samoan', ''),'gd' => __('Scots Gaelic', ''),'sr' => __('Serbian', ''),'st' => __('Sesotho', ''),'sn' => __('Shona', ''),'sd' => __('Sindhi', ''),'si' => __('Sinhala', ''),'sk' => __('Slovak', ''),'sl' => __('Slovenian', ''),'so' => __('Somali', ''),'es' => __('Spanish', ''),'su' => __('Sundanese', ''),'sw' => __('Swahili', ''),'sv' => __('Swedish', ''),'tg' => __('Tajik', ''),'ta' => __('Tamil', ''),'tt' => __('Tatar', ''),'te' => __('Telugu', ''),'th' => __('Thai', ''),'tr' => __('Turkish', ''),'tk' => __('Turkmen', ''),'uk' => __('Ukrainian', ''),'ur' => __('Urdu', ''),'ug' => __('Uyghur', ''),'uz' => __('Uzbek', ''),'vi' => __('Vietnamese', ''),'cy' => __('Welsh', ''),'xh' => __('Xhosa', ''),'yi' => __('Yiddish', ''),'yo' => __('Yoruba', ''),'zu' => __('Zulu', '')
                     )
                 ),
-                'additional_value' => array(
+				'additional_value' => array(
                     'title' => __('Additional Value', ''),
                     'type' => 'textarea', 
-                        'class' => 'ao1_paynext hide',
-                        'css' => 'display:none;',
+						'class' => 'ao1_paynext hide',
+						'css' => 'display:none;',
                     'description' => __('', '')
                 )
             );
@@ -352,11 +352,11 @@ function woocommerce_paynext_init()
         
         public function payment_scripts() {
             
-             if ($this->paynext_type == 'card') {
-                     wp_enqueue_script( 'woocommerce_paynext_custom',plugins_url( '/assets/js/custom.js', __FILE__ ), array( 'jquery' ) );
-             }
-             
-              wp_enqueue_style( 'woocommerce_paynext_custom',plugins_url( '/assets/style.css', __FILE__ ), true );
+			 if ($this->paynext_type == 'card') {
+					 wp_enqueue_script( 'woocommerce_paynext_custom',plugins_url( '/assets/js/custom.js', __FILE__ ), array( 'jquery' ) );
+			 }
+			 
+			  wp_enqueue_style( 'woocommerce_paynext_custom',plugins_url( '/assets/style.css', __FILE__ ), true );
         }
         
         
@@ -365,27 +365,27 @@ function woocommerce_paynext_init()
          **/
         function payment_fields()
         { 
-            if ($this->settings['logo'] == 'yes') { /* ?>
-                    <img class='icon_paynext' src='<?php echo woocommerce_plugin_url_paynext;?>/img/visamastjcb.png' >
-            <?php */
-            }
-        ?>
-          
-            <?php
-             if ($this->description){
-                echo $description ="<div class='paynext_description' >".wpautop(wptexturize($this->description))."</div>";
-             }
-            ?>
-         
-        
-        
-        <?php
-        
+			if ($this->settings['logo'] == 'yes') { /* ?>
+					<img class='icon_paynext' src='<?php echo woocommerce_plugin_url_paynext;?>/img/visamastjcb.png' >
+			<?php */
+			}
+		?>
+		  
+			<?php
+			 if ($this->description){
+				echo $description ="<div class='paynext_description' >".wpautop(wptexturize($this->description))."</div>";
+			 }
+			?>
+		 
+		
+		
+		<?php
+		
             if ($this->paynext_type == 'host') {
                 //if ($this->description) echo wpautop(wptexturize($this->description));
             } else {
                 $billing_creditcard_paynext = isset($_REQUEST['billing_creditcard_paynext']) ? esc_attr($_REQUEST['billing_creditcard_paynext']) : '';
-        ?>
+		?>
        <div class="payment_method_paynext-wrap">
        <div class="form-row form-row-wide wc-fyfx-form-wrap validate-required">
             <?php
@@ -495,21 +495,21 @@ function woocommerce_paynext_init()
                     $product_title[] = $_product->get_title();
                 }
                 $product_title              = implode(',', $product_title);
-                
-                
-                $products = $order->get_items();
-                $product_title = "";
-                if ( is_array( $products ) && count( $products ) > 0 ) {
-                    $product = current( $products );
-                    $product_title = $product->get_name();
-                }
-                
-                
+				
+				
+				$products = $order->get_items();
+				$product_title = "";
+				if ( is_array( $products ) && count( $products ) > 0 ) {
+					$product = current( $products );
+					$product_title = $product->get_name();
+				}
+				
+				
                 $the_currency               = get_woocommerce_currency();
                 $the_order_total            = @$order->order_total;
-                
+				
                 $gateway_url                =  implode('/', explode('/', $this->transaction_url, -1))."/directapi.do";
-                
+				
                 $curlPost                   = array();
                 $country=$order->get_billing_country();
                 //<!--Replace of 3 very important parameters * your product API code -->
@@ -520,7 +520,7 @@ function woocommerce_paynext_init()
                 $curlPost["cardsend"]       = "curl";
                 $curlPost["client_ip"]      = ($_SERVER['HTTP_X_FORWARDED_FOR']?$_SERVER['HTTP_X_FORWARDED_FOR']:$_SERVER['REMOTE_ADDR']);
                 $curlPost["action"]         = "product";
-                $curlPost["source"]         = "Curl-Direct (WV " . WOOCOMMERCE_VERSION . ")";
+				$curlPost["source"]         = "Curl-Direct (WV " . WOOCOMMERCE_VERSION . ")";
                 //<!--product price,curr and product name * by cart total amount -->
                 $curlPost["price"]          = $the_order_total;
                 $curlPost["curr"]           = $the_currency;
@@ -531,51 +531,51 @@ function woocommerce_paynext_init()
                 $billing_address_1=$order->billing_address_1;
                 if(empty($billing_address_1)){$billing_address_1=$country;}
 
-                $curlPost["fullname"] = $order->billing_first_name. " " .$order->billing_last_name;
+				$curlPost["fullname"] = $order->billing_first_name. " " .$order->billing_last_name;
                 $curlPost["email"]          = $order->billing_email;
                 $curlPost["bill_street_1"]  = $billing_address_1;
                 $curlPost["bill_street_2"]  = $billing_address_1;
                 $curlPost["bill_city"]      = $country;
                 $curlPost["bill_state"]     = $country;
+				
+				
+				$billing_phone=$order->billing_phone;
+				if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
                 
-                
-                $billing_phone=$order->billing_phone;
-                if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
-                
-                $curlPost["bill_country"]   = $country;
+				$curlPost["bill_country"]   = $country;
                 $curlPost["bill_zip"]       = "0000";
                 $curlPost["bill_phone"]     = $billing_phone;
                 $curlPost["id_order"]       = $order_id;
 
 
-                //$curlPost["sctest"]           = "22";
-                $curlPost["notify_url"]     = $this->notify_url;
-                $curlPost["success_url"]    = $this->get_return_url( $order );
-                $curlPost["error_url"]      = site_url() ."/cart/?cancel_order=true&order=wc_order_&order_id=".$order_id."&redirect&_wpnonce=";
+				//$curlPost["sctest"]     		= "22";
+				$curlPost["notify_url"]     = $this->notify_url;
+				$curlPost["success_url"]    = $this->get_return_url( $order );
+				$curlPost["error_url"]      = site_url() ."/cart/?cancel_order=true&order=wc_order_&order_id=".$order_id."&redirect&_wpnonce=";
                 
-                //<!--card details of .* customer -->
+				//<!--card details of .* customer -->
                 $curlPost["ccno"]           = $_POST['billing_creditcard_paynext'];
                 $curlPost["ccvv"]           = $_POST['billing_ccvnumber_paynext'];
                 $curlPost["month"]          = $_POST['billing_expdatemonth_paynext'];
                 $curlPost["year"]           = $_POST['billing_expdateyear_paynext'];
                 //$curlPost["notes"]="Remark for transaction";
+				
+				
+				
+				$curlPost["source"]           = "Curl-Direct (WV " . WOOCOMMERCE_VERSION . ")";
+				
+				$protocol = isset($_SERVER["HTTPS"])?'https://':'http://';
+				$source_url=$protocol.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+	
+				$curlPost["source_url"]           = (isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:$source_url);
                 
-                
-                
-                $curlPost["source"]           = "Curl-Direct (WV " . WOOCOMMERCE_VERSION . ")";
-                
-                $protocol = isset($_SERVER["HTTPS"])?'https://':'http://';
-                $source_url=$protocol.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-    
-                $curlPost["source_url"]           = (isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:$source_url);
-                
-                $additional_value = json_decode( $this->additional_value, true );
-                
-                if (($additional_value) && is_array( $additional_value ) ) {
-                    $curlPost=array_merge($curlPost, $additional_value);
-                }
-                
-                $protocol                   = isset($_SERVER["HTTPS"]) ? 'https://' : 'http://';
+				$additional_value = json_decode( $this->additional_value, true );
+				
+				if (($additional_value) && is_array( $additional_value ) ) {
+					$curlPost=array_merge($curlPost, $additional_value);
+				}
+				
+				$protocol                   = isset($_SERVER["HTTPS"]) ? 'https://' : 'http://';
                 $referer                    = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
                 $curl_cookie                = "";
                 $curl                       = curl_init();
@@ -592,48 +592,48 @@ function woocommerce_paynext_init()
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
                 $response = curl_exec($curl);
-                curl_close($curl);
+				curl_close($curl);
                 $results  = json_decode($response, true);
 
                 
 
-                if ( $results['response']['code'] == '200' ) {
-                    $results = json_decode( $results['body'], true );
-                }
-                
-                if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {  //old version 
-                    
-                } else { // latest version 
-                    
-                }
-                
+				if ( $results['response']['code'] == '200' ) {
+					$results = json_decode( $results['body'], true );
+				}
+				
+				if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {  //old version 
+					
+				} else { // latest version 
+					
+				}
+				
 
                 $status = $results["status"];
                 $response_encode = json_encode($results, true) . " || " . $response;
                 $status_nm = (int)($results["status_nm"]);
                 $sub_query = http_build_query($results);
 
-                        
-                //error extractor
-                $error="";
-                if (isset( $results['Error'] ) || isset( $results['error'] ) || isset( $results['reason'] ) ) {
-                    
-                    if ( isset( $results['reason'] ) ){
-                        $error.=$results['reason']." <br/> ";
-                    }
-                    if ( isset( $results['Error'] ) ){
-                        $error.=$results['Error']." <br/> ";
-                    }
-                    if ( isset( $results['error'] ) ){
-                        $error.=$results['error']." <br/> ";
-                    }
-                    if ( isset( $results['descriptor'] ) && $results['descriptor'] && !$results['descriptor']=='N/A' ){
-                        $error.="Transaction Descriptor : ".$results['descriptor'];
-                    }
-                    //$error.=$response." | ";
-                    
-                    update_post_meta( $order_id, 'response_status', $error );
-                }                          
+               			
+				//error extractor
+				$error="";
+				if (isset( $results['Error'] ) || isset( $results['error'] ) || isset( $results['reason'] ) ) {
+					
+					if ( isset( $results['reason'] ) ){
+						$error.=$results['reason']." <br/> ";
+					}
+					if ( isset( $results['Error'] ) ){
+						$error.=$results['Error']." <br/> ";
+					}
+					if ( isset( $results['error'] ) ){
+						$error.=$results['error']." <br/> ";
+					}
+					if ( isset( $results['descriptor'] ) && $results['descriptor'] && !$results['descriptor']=='N/A' ){
+						$error.="Transaction Descriptor : ".$results['descriptor'];
+					}
+					//$error.=$response." | ";
+					
+					update_post_meta( $order_id, 'response_status', $error );
+				}				           
               
                 
            if(isset($results["status"]))
@@ -691,45 +691,87 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
                     // this is important part for empty cart
-                    $woocommerce->cart->empty_cart();  
+                    //$woocommerce->cart->empty_cart();  
                     return array(
                         'result' => 'success',
                         'redirect' => $this->get_return_url($order)
                     );                  
 
-                } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
-                    wc_add_notice( sprintf( __($reason) ), 'error' );                    
+                } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled                  
+                    // Remove the action that empties the cart
+                    remove_action( 'woocommerce_order_status_pending_to_processing', 'wc_empty_cart', 1 );
+                    remove_action( 'woocommerce_order_status_pending_to_completed', 'wc_empty_cart', 1 );
+                    remove_action( 'woocommerce_order_status_pending_to_on-hold', 'wc_empty_cart', 1 );
+
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
                     $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
-                    
+
+                    $items = $order->get_items();
+                    foreach ( $items as $item ) {
+                    $product_id = $item->get_product_id();
+                        switch ( $product_id ) {
+                            case 36: //7132
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-starter/';
+                                break;
+                            case 67: //7083
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-standard/';
+                                break;
+                            case 71: //7133
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-professional/';
+                                break;
+                            // Add more cases for other product IDs if needed
+                        }
+                        
+                        // Add a notice and link to go back to the previous checkout page
+                        wc_add_notice( 'Payment failed. Click <a href="' . esc_url( $checkout_url ) . '">here</a> to go back to the checkout page.', 'error' );
+                        return;
+                    }
+                    $order->add_order_note('cError: ' . $error . "log: " . $response_encode );             
                     $order->update_status($this->status_cancelled);
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $order->get_checkout_payment_url(true)
-                    ); 
                 } else { // Pending
-                    wc_add_notice( sprintf( __($reason) ), 'error' );
+                    // Remove the action that empties the cart
+                    remove_action( 'woocommerce_order_status_pending_to_processing', 'wc_empty_cart', 1 );
+                    remove_action( 'woocommerce_order_status_pending_to_completed', 'wc_empty_cart', 1 );
+                    remove_action( 'woocommerce_order_status_pending_to_on-hold', 'wc_empty_cart', 1 );
+
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
 
+                    $items = $order->get_items();
+                    foreach ( $items as $item ) {
+                    $product_id = $item->get_product_id();
+                        switch ( $product_id ) {
+                            case 36: //7132
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-starter/';
+                                break;
+                            case 67: //7083
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-standard/';
+                                break;
+                            case 71: //7133
+                                $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-professional/';
+                                break;
+                            // Add more cases for other product IDs if needed
+                        }
+                        
+                        // Add a notice and link to go back to the previous checkout page
+                        wc_add_notice( 'Payment failed. Click <a href="' . esc_url( $checkout_url ) . '">here</a> to go back to the checkout page.', 'error' );
+                        return;
+                    } 
+
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $order->get_checkout_payment_url(true)
-                    );
                 }               
 
             }
             update_post_meta($order_id, '_post_data', $_POST);
             return array(
                 'result' => 'success',
-                'redirect' => $this->get_return_url($order)
+                'redirect' => $order->get_checkout_payment_url(true)
             );
         }
         
@@ -787,7 +829,7 @@ function woocommerce_paynext_init()
                                        if(empty( $check_transaction_id)){
                                     $order->add_order_note('paynext payment successful<br/>Transaction ID: ' . $json_response['transaction_id']);
                                        }
-                                    $woocommerce->cart->empty_cart();
+                                    //$woocommerce->cart->empty_cart();
                                 }
                             } else if ($status == "Failed" || $status == "Cancelled") {
                                 $msg['class']   = 'error';
@@ -876,16 +918,16 @@ function woocommerce_paynext_init()
                     $product_title[] = $_product->get_title();
                 }
                 $product_title      = implode(',', $product_title);
-                
-                
-                $products = $order->get_items();
-                $product_title = "";
-                if ( is_array( $products ) && count( $products ) > 0 ) {
-                    $product = current( $products );
-                    $product_title = $product->get_name();
-                }
-                
-                
+				
+				
+				$products = $order->get_items();
+				$product_title = "";
+				if ( is_array( $products ) && count( $products ) > 0 ) {
+					$product = current( $products );
+					$product_title = $product->get_name();
+				}
+				
+				
                 $paynext_args_array   = array();
                 $paynext_args_array[] = "<input type='hidden' name='checkout_language' value='" . $this->checkout_language . "'/>";
                 $paynext_args_array[] = "<input type='hidden' name='api_token' value='" . $this->api_token . "'/>";
@@ -893,46 +935,46 @@ function woocommerce_paynext_init()
                 $paynext_args_array[] = '<input type="hidden" name="cardsend" value="CHECKOUT"/>';
                 $paynext_args_array[] = '<input type="hidden" name="client_ip" value="'.($_SERVER['HTTP_X_FORWARDED_FOR']?$_SERVER['HTTP_X_FORWARDED_FOR']:$_SERVER['REMOTE_ADDR']).'"/>';
                 $paynext_args_array[] = '<input type="hidden" name="action" value="product"/>'; 
-                $paynext_args_array[] = '<input type="hidden" name="source" value="Host-Re-Direct (WV ' . WOOCOMMERCE_VERSION . ')"/>';
+				$paynext_args_array[] = '<input type="hidden" name="source" value="Host-Re-Direct (WV ' . WOOCOMMERCE_VERSION . ')"/>';
                 $paynext_args_array[] = '<input type="hidden" name="price" value="' . $the_order_total . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="curr" value="' . $the_currency . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="product_name" value="' . $product_title . ' "/>';
                 //$paynext_args_array[] = '<input type="hidden" name="ccholder" value="' . @$order->billing_first_name . '"/>';
                 //$paynext_args_array[] = '<input type="hidden" name="ccholder_lname" value="' . @$order->billing_last_name . '"/>';
-                $paynext_args_array[] = '<input type="hidden" name="fullname" value="' . @$order->billing_first_name ." " . @$order->billing_last_name. '"/>';
+				$paynext_args_array[] = '<input type="hidden" name="fullname" value="' . @$order->billing_first_name ." " . @$order->billing_last_name. '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="email" value="' . @$order->billing_email . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="bill_street_1" value="' . @$order->billing_address_1 . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="bill_street_2" value="' . @$order->billing_address_2 . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="bill_city" value="' . @$order->billing_city . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="bill_state" value="' . @$order->billing_state . '"/>';
-                $country=$order->get_billing_country();
-                $billing_phone=$order->billing_phone;
-                if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
-                $paynext_args_array[] = '<input type="hidden" name="bill_country" value="' .$country. '"/>';
+				$country=$order->get_billing_country();
+				$billing_phone=$order->billing_phone;
+				if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
+				$paynext_args_array[] = '<input type="hidden" name="bill_country" value="' .$country. '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="bill_zip" value="0000"/>';
                 $paynext_args_array[] = '<input type="hidden" name="bill_phone" value="' . $billing_phone . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="id_order" value="' . $order_id . '"/>';
                
-               $paynext_args_array[] = '<input type="hidden" name="notify_url" value="' . $this->notify_url . '"/>';
+			   $paynext_args_array[] = '<input type="hidden" name="notify_url" value="' . $this->notify_url . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="success_url" value="' . $this->get_return_url( $order ) . '"/>';
                 $paynext_args_array[] = '<input type="hidden" name="error_url" value="' . site_url() ."/cart/?cancel_order=true&order=wc_order_&order_id=".$order_id."&redirect&_wpnonce=" . '"/>';
-                
-                $protocol = isset($_SERVER["HTTPS"])?'https://':'http://';
-                $source_url=$protocol.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-                
-                $paynext_args_array[] = '<input type="hidden" name="source_url" value="' . (isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:$source_url) . '"/>';
-                
-                
-                
-                $additional_value = json_decode( $this->additional_value, true );
-                if (($additional_value) && is_array( $additional_value ) ) {
-                    foreach($additional_value as $key=>$value){
-                        $paynext_args_array[] = '<input type="hidden" name="'.$key.'" value="'.$value.'"/>';
-                    }
-                }
-                
-                $host_url=implode('/', explode('/', $this->transaction_url, -1))."/checkout.do";
-                
+				
+				$protocol = isset($_SERVER["HTTPS"])?'https://':'http://';
+				$source_url=$protocol.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				
+				$paynext_args_array[] = '<input type="hidden" name="source_url" value="' . (isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:$source_url) . '"/>';
+				
+				
+				
+				$additional_value = json_decode( $this->additional_value, true );
+				if (($additional_value) && is_array( $additional_value ) ) {
+					foreach($additional_value as $key=>$value){
+						$paynext_args_array[] = '<input type="hidden" name="'.$key.'" value="'.$value.'"/>';
+					}
+				}
+				
+				$host_url=implode('/', explode('/', $this->transaction_url, -1))."/checkout.do";
+				
                 $form .= '<form action="'. $host_url .'" method="post" id="paynext_payment_form"  ' . $targetto . '>
                 ' . implode('', $paynext_args_array) . '
                 <!-- Button Fallback -->
@@ -962,14 +1004,14 @@ function woocommerce_paynext_init()
 
 
  function admin_paynext_load_scripts( $hook ) {
-    $get_settings=get_option( 'woocommerce_paynext_settings', true );
+	$get_settings=get_option( 'woocommerce_paynext_settings', true );
    echo "<script>
                 var paynext_api_token='{$get_settings['api_token']}';
         </script>";
-        
+		
     //wp_enqueue_script( 'my_custom_script', plugin_dir_url( __FILE__ ) . 'assets/js/paynext_admin_custom.js', array(), '1.0' ); 
-    
-     wp_enqueue_script( 'my-plugin-script-paynext', plugin_dir_url( __FILE__ ) . 'assets/js/paynext_admin_custom.js'); 
+	
+	 wp_enqueue_script( 'my-plugin-script-paynext', plugin_dir_url( __FILE__ ) . 'assets/js/paynext_admin_custom.js'); 
 }
 
     
@@ -988,38 +1030,38 @@ add_action('wp_enqueue_scripts', 'enqueue_custom_scripts');
 function check_paynext_transaction_status(){
 
 
-    $validateurl=get_option( 'woocommerce_paynext_settings', true );
+	$validateurl=get_option( 'woocommerce_paynext_settings', true );
 
-    $transaction_id=$_POST['tra_id'];
-    //$url=$validateurl['validate_url']."?transaction_id=".$transaction_id;
-    $url=implode('/', explode('/', $validateurl['transaction_url'], -1))."/validate.do"."?transaction_id=".$transaction_id."&api_token=".$validateurl['api_token'];
-        
-        $setPost=array();
-        $setPost['transaction_id'] =  $transaction_id;
-        $setPost['api_token'] =  $validateurl['api_token'];
-        
-    
-        $ch = curl_init();
-        curl_setopt($ch,CURLOPT_URL, $url);
-        curl_setopt($ch,CURLOPT_POST,1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $setPost);
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false); 
-        curl_setopt($ch,CURLOPT_SSL_VERIFYHOST, false);
-        $response = curl_exec($ch);
-        curl_close($ch);
-        $json_response = json_decode($response,true);
-        
-        $htmlresponse="";
-        foreach($json_response as $key=>$data)
-        {
-            
-            $htmlresponse.="<br><b>".$key.":</b>".$data;  
-            
-            
-        }
-    echo $htmlresponse;
-    exit;
+	$transaction_id=$_POST['tra_id'];
+	//$url=$validateurl['validate_url']."?transaction_id=".$transaction_id;
+	$url=implode('/', explode('/', $validateurl['transaction_url'], -1))."/validate.do"."?transaction_id=".$transaction_id."&api_token=".$validateurl['api_token'];
+		
+		$setPost=array();
+		$setPost['transaction_id'] =  $transaction_id;
+		$setPost['api_token'] =  $validateurl['api_token'];
+		
+	
+     	$ch = curl_init();
+		curl_setopt($ch,CURLOPT_URL, $url);
+		curl_setopt($ch,CURLOPT_POST,1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $setPost);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+		curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false); 
+		curl_setopt($ch,CURLOPT_SSL_VERIFYHOST, false);
+		$response = curl_exec($ch);
+		curl_close($ch);
+		$json_response = json_decode($response,true);
+		
+		$htmlresponse="";
+		foreach($json_response as $key=>$data)
+		{
+		    
+		  	$htmlresponse.="<br><b>".$key.":</b>".$data;  
+		    
+		    
+		}
+	echo $htmlresponse;
+	exit;
 
 
 }
@@ -1082,5 +1124,6 @@ function run_paynext_js_script_response() {
     do_action('paynext_hook_paynext_js_script_response');
 }
 add_action('wp_footer', 'run_paynext_js_script_response');
+
 
 ?>
