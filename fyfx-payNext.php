@@ -705,6 +705,11 @@ function woocommerce_paynext_init()
                     $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
 
                     wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
+
+                    // Remove the action that empties the cart
+                    remove_action( 'woocommerce_order_status_pending_to_processing', 'wc_empty_cart', 1 );
+                    remove_action( 'woocommerce_order_status_pending_to_completed', 'wc_empty_cart', 1 );
+                    remove_action( 'woocommerce_order_status_pending_to_on-hold', 'wc_empty_cart', 1 );
                     
                     $order->update_status($this->status_cancelled);
                 } else { // Pending
@@ -712,6 +717,11 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
+
+                    // Remove the action that empties the cart
+                    remove_action( 'woocommerce_order_status_pending_to_processing', 'wc_empty_cart', 1 );
+                    remove_action( 'woocommerce_order_status_pending_to_completed', 'wc_empty_cart', 1 );
+                    remove_action( 'woocommerce_order_status_pending_to_on-hold', 'wc_empty_cart', 1 );
 
                     wc_add_notice( sprintf( __($reason.' <a href="%s" class="button alt">Return to Checkout Page</a>'), get_permalink( get_option('woocommerce_checkout_page_id') ) ), 'error' );
 
