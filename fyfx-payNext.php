@@ -593,22 +593,22 @@ function woocommerce_paynext_init()
                 } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled                  
                     // Add a notice and link to go back to the previous checkout page
                     wc_add_notice( sprintf( __('Payment Failed: Please Use Stripe Payment - %s', 'fyfx-payNext'), $reason ), 'error' ); 
-                    $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_cancelled);
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
+                    return;
                 } else { // Pending
                     // Add a notice and link to go back to the previous checkout page
-                    wc_add_notice( sprintf( __('Payment Failed: Please Use Stripe Payment - %s', 'fyfx-payNext'), $reason ), 'error' );   
-                    $order->add_order_note( $status. ':- ' . $reason . "log: " . $response_encode );
+                    wc_add_notice( sprintf( __('Payment Failed: Please Use Stripe Payment - %s', 'fyfx-payNext'), $reason ), 'error' );
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);                  
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
+                    return;
                 }               
 
             }
