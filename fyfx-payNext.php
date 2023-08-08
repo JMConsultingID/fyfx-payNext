@@ -712,11 +712,6 @@ function woocommerce_paynext_init()
                     $items = $order->get_items();
                     foreach ( $items as $item ) {
                     $product_id = $item->get_product_id();
-                    $product = wc_get_product( $product_id );
-                    if ( $product ) {
-                        $checkout_url = get_checkout_url();
-                        
-                        // Check the product ID and set the appropriate checkout URL
                         switch ( $product_id ) {
                             case 36: //7132
                                 $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-starter/';
@@ -733,7 +728,6 @@ function woocommerce_paynext_init()
                         // Add a notice and link to go back to the previous checkout page
                         wc_add_notice( 'Payment failed. Click <a href="' . esc_url( $checkout_url ) . '">here</a> to go back to the checkout page.', 'error' );
                         return;
-                    }
                     }
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );             
                     $order->update_status($this->status_cancelled);
@@ -751,11 +745,6 @@ function woocommerce_paynext_init()
                     $items = $order->get_items();
                     foreach ( $items as $item ) {
                     $product_id = $item->get_product_id();
-                    $product = wc_get_product( $product_id );
-                    if ( $product ) {
-                        $checkout_url = get_checkout_url();
-                        
-                        // Check the product ID and set the appropriate checkout URL
                         switch ( $product_id ) {
                             case 36: //7132
                                 $checkout_url = 'https://fundyourfx.com/sellkit_step/setup-starter/';
@@ -772,8 +761,7 @@ function woocommerce_paynext_init()
                         // Add a notice and link to go back to the previous checkout page
                         wc_add_notice( 'Payment failed. Click <a href="' . esc_url( $checkout_url ) . '">here</a> to go back to the checkout page.', 'error' );
                         return;
-                    }
-                    }  
+                    } 
 
                     $order->add_order_note('cError: ' . $error . "log: " . $response_encode );
                     $order->update_status($this->status_pending);
