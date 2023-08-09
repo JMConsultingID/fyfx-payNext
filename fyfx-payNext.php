@@ -1078,16 +1078,17 @@ add_action('wp_footer', 'run_paynext_js_script_response');
 
 add_action( 'wp_footer','woo_checkout_prevent_scroll_to_notices' );
 
-function woo_checkout_prevent_scroll_to_notices() {
-ob_start();?>
-<script>
-jQuery( function($) {
-  jQuery( document ).ajaxComplete( function() { // prevents woocommerce checkout.js scroll to notices on ajax update
-    jQuery("html, body").animate({ scrollTop: 0 }, "slow");
-  });
-}); // jquery wrap
-</script>
-<?php
-ob_end_flush();
+function add_custom_script_to_footer() {
+    ?>
+    <script>
+    jQuery(document).ajaxComplete(function(event, xhr, settings) {
+            if (jQuery('.woocommerce-error').length > 0) {
+                console.log("Error notice displayed on checkout page.");
+            }
+    });
+    </script>
+    <?php
 }
+
+add_action('wp_footer', 'add_custom_script_to_footer');
 ?>
