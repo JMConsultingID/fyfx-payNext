@@ -59,9 +59,17 @@ jQuery(document).ready(function() {
     }, 'slow');
   }
 
-    if ( jQuery('.woocommerce-NoticeGroup').css('display') == undefined) {
-        console.log('Notice Hidden');
-    } else {
-        console.log('Visible');
-    }
+    jQuery('.sellkit-checkout-widget-primary-button').on('click', function(e) {
+            // Prevent default form submission
+            e.preventDefault();
+
+            if ( jQuery('.woocommerce-NoticeGroup').css('display') == undefined) {
+              console.log('Notice Hidden');
+            } else {
+                console.log('Visible');
+            }
+    });
 });
+
+
+        
