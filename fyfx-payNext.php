@@ -1084,6 +1084,7 @@ function add_custom_script_to_footer() {
     jQuery(document).ajaxComplete(function(event, xhr, settings) {
             if (jQuery('.woocommerce-error').length > 0) {
                 console.log("Error notice displayed on checkout page.");
+                jQuery('html, body').animate({ scrollTop: 0 }, 'fast');
             }
     });
     </script>
