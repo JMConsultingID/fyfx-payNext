@@ -1080,11 +1080,13 @@ add_action( 'wp_footer','woo_checkout_prevent_scroll_to_notices' );
 
 function add_custom_script_to_footer() {
     ?>
-    <script>
+    <script type="text/javascript">
     jQuery(document).ajaxComplete(function(event, xhr, settings) {
             if (jQuery('.woocommerce-error').length > 0) {
                 console.log("Error notice displayed on checkout page.");
-                jQuery('.woocommerce-error').animate({ scrollTop: 0 }, 'fast');
+                jQuery('html, body').animate({
+                        scrollTop: jQuery(".woocommerce-error").offset().top
+                    }, 800);
                 return false;
             }
     });
