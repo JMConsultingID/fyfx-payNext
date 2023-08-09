@@ -705,12 +705,6 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
-                    wc_add_notice(
-                        "<script type='text/javascript'>
-                            jQuery('html, body').animate({scrollTop: 0}, 'slow');
-                        </script>",
-                        'notice'
-                    );
                     return;
                 } else { // Pending
                     // Add a notice and link to go back to the previous checkout page
@@ -721,12 +715,6 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
-                    wc_add_notice(
-                        "<script type='text/javascript'>
-                            jQuery('html, body').animate({scrollTop: 0}, 'slow');
-                        </script>",
-                        'notice'
-                    );
                     return;
                 }               
 
