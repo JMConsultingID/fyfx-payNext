@@ -58,4 +58,10 @@ jQuery(document).ready(function() {
       scrollTop: 0
     }, 'slow');
   }
+
+    if ( jQuery('.woocommerce-NoticeGroup').css('display') == undefined) {
+        console.log('Notice Hidden');
+    } else {
+        console.log('Visible');
+    }
 });
