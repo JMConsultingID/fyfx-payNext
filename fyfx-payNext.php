@@ -1084,9 +1084,7 @@ function add_custom_script_to_footer() {
     jQuery(document).ajaxComplete(function(event) {
             if (jQuery('.woocommerce-NoticeGroup').length > 0) {
                 console.log("Error notice displayed on checkout page.");
-                jQuery('html, body').animate({
-                        scrollTop: jQuery(".woocommerce-NoticeGroup").offset().top
-                    }, 800);
+                $('html, body').animate({scrollTop: 10000}, 2000); // for all browsers
                 return false;
             }
     });
