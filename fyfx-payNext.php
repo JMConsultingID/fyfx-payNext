@@ -1079,7 +1079,6 @@ add_action('wp_footer', 'run_paynext_js_script_response');
 add_action( 'wp_footer','woo_checkout_prevent_scroll_to_notices' );
 
 function woo_checkout_prevent_scroll_to_notices() {
-if ( function_exists( 'is_checkout' ) && is_checkout() ) :
 ob_start();?>
 <script>
 jQuery( function($) {
@@ -1090,6 +1089,5 @@ jQuery( function($) {
 </script>
 <?php
 ob_end_flush();
-endif;
 }
 ?>
