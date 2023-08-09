@@ -52,19 +52,13 @@ jQuery(document).ready(function() {
     }
   });
 
-  // Check for WooCommerce error and scroll to top
-  if (jQuery('.woocommerce-NoticeGroup').length) {
-    jQuery('html, body').animate({
-      scrollTop: 0
-    }, 'slow');
-  }
+  
 
     jQuery('.sellkit-checkout-widget-primary-button').on('click', function(e) {
-            if ( jQuery('.woocommerce-NoticeGroup').css('display') == undefined) {
-              console.log('Notice Hidden');
-            } else {
-                console.log('Visible');
-            }
+            // Check for WooCommerce error and scroll to top
+                  jQuery('html, body').animate({
+                    scrollTop: 0
+                  }, 'slow');
     });
 });
 
