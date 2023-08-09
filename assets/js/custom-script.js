@@ -4,6 +4,13 @@ jQuery(document).ready(function() {
   var expYearInput = jQuery("#expYear");
   var errorContainer = jQuery("#errorContainer");
 
+  if ($('.woocommerce-error').length) {
+      console.log("Woo Tadaaa");
+      $('html, body').animate({
+          scrollTop: 0
+      }, 'slow');
+  }
+
   function validateExpirationDate() {
     var today = new Date();
     var currentYear = today.getFullYear() % 100;
