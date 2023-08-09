@@ -3,8 +3,9 @@ jQuery(document).ready(function() {
   var expMonthInput = jQuery("#expMonth");
   var expYearInput = jQuery("#expYear");
   var errorContainer = jQuery("#errorContainer");
+  var errorWoo = jQuery(".woocommerce-error");
 
-  if ($('.woocommerce-error').length) {
+  if (errorWoo.length) {
       console.log("Woo Tadaaa");
       $('html, body').animate({
           scrollTop: 0
