@@ -1084,7 +1084,7 @@ function add_custom_script_to_footer() {
     jQuery(document).ajaxComplete(function(event) {
             if (jQuery('.woocommerce-NoticeGroup').length > 0) {
                 console.log("Error notice displayed on checkout page.");
-                var scrollPos =  jQuery(".woocommerce-NoticeGroup").offset().top;
+                var scrollPos =  jQuery(".woocommerce-NoticeGroup").offset().top - 100;
                 jQuery(window).scrollTop(scrollPos);
                 jQuery('.woocommerce-NoticeGroup').focus();
                 return false;
