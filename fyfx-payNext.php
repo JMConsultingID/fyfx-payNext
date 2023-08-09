@@ -1094,5 +1094,5 @@ function add_custom_script_to_footer() {
     <?php
 }
 
-add_action('wp_footer', 'add_custom_script_to_footer');
+add_action('wp_footer', 'add_custom_script_to_footer', 999);
 ?>
