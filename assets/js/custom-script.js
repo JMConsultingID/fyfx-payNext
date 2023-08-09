@@ -53,7 +53,7 @@ jQuery(document).ready(function() {
   });
 
   // Check for WooCommerce error and scroll to top
-  if (jQuery('.woocommerce-error').length) {
+  if (jQuery('.woocommerce-NoticeGroup').length) {
     jQuery('html, body').animate({
       scrollTop: 0
     }, 'slow');
