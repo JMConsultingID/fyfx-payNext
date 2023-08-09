@@ -705,17 +705,6 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
-                    // Add JavaScript to scroll to the notice section
-                    // Add JavaScript to scroll to the notice section
-                    echo '<script>
-                        jQuery(document).ready(function($) {
-                            if ($(".woocommerce-notices-wrapper").length > 0) {
-                                $("html, body").animate({
-                                    scrollTop: $(".woocommerce-notices-wrapper").offset().top
-                                }, 800);
-                            }
-                        });
-                    </script>';
                     return;
                 } else { // Pending
                     // Add a notice and link to go back to the previous checkout page
@@ -726,16 +715,6 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'status_nm', $status_nm );
                     update_post_meta( $order_id, 'response_status', $status_cc );
-                    // Add JavaScript to scroll to the notice section
-                    echo '<script>
-                        jQuery(document).ready(function($) {
-                            if ($(".woocommerce-notices-wrapper").length > 0) {
-                                $("html, body").animate({
-                                    scrollTop: $(".woocommerce-notices-wrapper").offset().top
-                                }, 800);
-                            }
-                        });
-                    </script>';
                     return;
                 }               
 
@@ -746,6 +725,7 @@ function woocommerce_paynext_init()
                 'redirect' => $this->get_return_url($order)
             );
         }
+        
        
         
         /**
