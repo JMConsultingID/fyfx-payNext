@@ -1084,7 +1084,7 @@ ob_start();?>
 jQuery( function($) {
   jQuery( document ).ajaxComplete( function() { // prevents woocommerce checkout.js scroll to notices on ajax update
     jQuery("html, body").animate({ scrollTop: 0 }, "slow");
-  }
+  });
 }); // jquery wrap
 </script>
 <?php
