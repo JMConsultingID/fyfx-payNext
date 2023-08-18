@@ -1117,8 +1117,6 @@ function run_paynext_js_script_response() {
 }
 add_action('wp_footer', 'run_paynext_js_script_response');
 
-add_action( 'wp_footer','woo_checkout_prevent_scroll_to_notices' );
-
 function add_custom_script_to_footer() {
     ?>
     <script type="text/javascript">
