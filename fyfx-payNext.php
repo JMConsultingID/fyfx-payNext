@@ -188,21 +188,6 @@ function woocommerce_paynext_init()
                     'description' => __('', '')
                 ),
 
-                'additional_option' => array(
-                    'title' => __('Additional Options', ''), 
-                    'default' => 'Additional Options',
-                    'type' => 'title',
-                    
-                    //'type' => 'button',
-                    'custom_attributes' => array(
-                        //'onclick' => "woocommerce_addvalf();",
-                    ),
-                    'css'  => 'color: #032279;text-align:center;font-weight:bold;font-size:16px;padding:10px 0;height:50px;',
-                    'class' => 'button-secondary addButtonId_paynext',
-                    'id'       => 'woocommerce_addButtonId_paynext',
-                    'desc' => __('The following options are default.', '')
-                ),
-                
                 'paynext_type' => array(
                     'title' => __('Payment Type', ''),
                     'default' => 'host',
