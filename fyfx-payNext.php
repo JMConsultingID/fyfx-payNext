@@ -188,26 +188,12 @@ function woocommerce_paynext_init()
                     'description' => __('', '')
                 ),
 
-                'additional_option' => array(
-                    'title' => __('Additional Options', ''), 
-                    'default' => 'Additional Options',
-                    'type' => 'title',
-                    
-                    //'type' => 'button',
-                    'custom_attributes' => array(
-                        //'onclick' => "woocommerce_addvalf();",
-                    ),
-                    'css'  => 'color: #032279;text-align:center;font-weight:bold;font-size:16px;padding:10px 0;height:50px;',
-                    'class' => 'button-secondary addButtonId_paynext',
-                    'id'       => 'woocommerce_addButtonId_paynext',
-                    'desc' => __('The following options are default.', '')
-                ),
                 
                 'paynext_type' => array(
                     'title' => __('Payment Type', ''),
                     'default' => 'host',
                     'type' => 'select',
-                        'class' => 'ao1_paynext hide',
+                        'class' => 'ao1_paynext',
                         'css' => '',
                     'options' => array(
                         'card' => __('Card Payment Gateway (Direct by Curl)', ''),
@@ -219,7 +205,7 @@ function woocommerce_paynext_init()
                     'title' => __('3DS Validation', ''),
                     'default' => 'no',
                     'type' => 'select',
-                        'class' => 'ao1_paynext hide',
+                        'class' => 'ao1_paynext',
                         'css' => 'display:none;',
                     'options' => array(
                         'yes' => __('3DS Validation A', ''),
@@ -230,7 +216,7 @@ function woocommerce_paynext_init()
                 'title' => array(
                     'title' => __('Title:', ''),
                     'type' => 'text',
-                        'class' => 'ao1_paynext hide',
+                        'class' => 'ao1_paynext',
                         'css' => 'display:none;',
                     'description' => __('Process secure payment by Credit Card & Crypto eWallet', ''),
                     'default' => __('Credit Card & Crypto eWallet', '')
@@ -238,7 +224,7 @@ function woocommerce_paynext_init()
                 'logo' => array(
                     'title' => __('Display Icon:', ''),
                     'type' => 'Checkbox', 
-                        'class' => 'ao1_paynext dispIcon1_paynext hide',
+                        'class' => 'ao1_paynext dispIcon1_paynext',
                         'css' => '',
                     'description' => __('This controls the title which the user sees during checkout.', ''),
                     'default' => __('paynext', '')
@@ -246,7 +232,7 @@ function woocommerce_paynext_init()
                 'description' => array(
                     'title' => __('Description:', ''),
                     'type' => 'textarea', 
-                        'class' => 'ao1_paynext hide',
+                        'class' => 'ao1_paynext',
                         'css' => '',
                     'description' => __('This controls the description which the user sees during checkout.', ''),
                     'default' => __('Pay  Credit card  through paynext Secure Servers.', '')
@@ -255,7 +241,7 @@ function woocommerce_paynext_init()
                     'title' => __('If Completed/Successfull/Test Transaction', ''),
                     'default' => 'completed',
                     'type' => 'select', 
-                        'class' => 'ao1_paynext hide',
+                        'class' => 'ao1_paynext',
                         'css' => '',
                     'options' => array(
                         'pending' => __('Pending payment', ''),
@@ -271,7 +257,7 @@ function woocommerce_paynext_init()
                     'title' => __('If Cancelled/Failed', ''),
                     'default' => 'cancelled',
                     'type' => 'select', 
-                        'class' => 'ao1_paynext hide',
+                        'class' => 'ao1_paynext',
                         'css' => '',
                     'options' => array(
                         'pending' => __('Pending payment', ''),
@@ -287,7 +273,7 @@ function woocommerce_paynext_init()
                     'title' => __('If Any error/ No Response', ''),
                     'default' => 'failed',
                     'type' => 'select', 
-                        'class' => 'ao1_paynext hide',
+                        'class' => 'ao1_paynext',
                         'css' => '',
                     'options' => array(
                         'pending' => __('Pending payment', ''),
@@ -303,7 +289,7 @@ function woocommerce_paynext_init()
                     'title' => __('Checkout Language', ''),
                     'default' => 'en',
                     'type' => 'select', 
-                        'class' => 'ao1_paynext hide',
+                        'class' => 'ao1_paynext',
                         'css' => '',
                     'options' => array(
                         'en' => __('English', ''),'af' => __('Afrikaans', ''),'sq' => __('Albanian', ''),'am' => __('Amharic', ''),'ar' => __('Arabic', ''),'hy' => __('Armenian', ''),'az' => __('Azerbaijani', ''),'eu' => __('Basque', ''),'be' => __('Belarusian', ''),'bn' => __('Bengali', ''),'bs' => __('Bosnian', ''),'bg' => __('Bulgarian', ''),'ca' => __('Catalan', ''),'ceb' => __('Cebuano', ''),'ny' => __('Chichewa', ''),'zh-CN' => __('Chinese (Simplified)', ''),'zh-TW' => __('Chinese (Traditional)', ''),'co' => __('Corsican', ''),'hr' => __('Croatian', ''),'cs' => __('Czech', ''),'da' => __('Danish', ''),'nl' => __('Dutch', ''),'eo' => __('Esperanto', ''),'et' => __('Estonian', ''),'tl' => __('Filipino', ''),'fi' => __('Finnish', ''),'fr' => __('French', ''),'fy' => __('Frisian', ''),'gl' => __('Galician', ''),'ka' => __('Georgian', ''),'de' => __('German', ''),'el' => __('Greek', ''),'gu' => __('Gujarati', ''),'ht' => __('Haitian Creole', ''),'ha' => __('Hausa', ''),'haw' => __('Hawaiian', ''),'iw' => __('Hebrew', ''),'hi' => __('Hindi', ''),'hmn' => __('Hmong', ''),'hu' => __('Hungarian', ''),'is' => __('Icelandic', ''),'ig' => __('Igbo', ''),'id' => __('Indonesian', ''),'ga' => __('Irish', ''),'it' => __('Italian', ''),'ja' => __('Japanese', ''),'jw' => __('Javanese', ''),'kn' => __('Kannada', ''),'kk' => __('Kazakh', ''),'km' => __('Khmer', ''),'rw' => __('Kinyarwanda', ''),'ko' => __('Korean', ''),'ku' => __('Kurdish (Kurmanji)', ''),'ky' => __('Kyrgyz', ''),'lo' => __('Lao', ''),'la' => __('Latin', ''),'lv' => __('Latvian', ''),'lt' => __('Lithuanian', ''),'lb' => __('Luxembourgish', ''),'mk' => __('Macedonian', ''),'mg' => __('Malagasy', ''),'ms' => __('Malay', ''),'ml' => __('Malayalam', ''),'mt' => __('Maltese', ''),'mi' => __('Maori', ''),'mr' => __('Marathi', ''),'mn' => __('Mongolian', ''),'my' => __('Myanmar (Burmese)', ''),'ne' => __('Nepali', ''),'no' => __('Norwegian', ''),'or' => __('Odia (Oriya)', ''),'ps' => __('Pashto', ''),'fa' => __('Persian', ''),'pl' => __('Polish', ''),'pt' => __('Portuguese', ''),'pa' => __('Punjabi', ''),'ro' => __('Romanian', ''),'ru' => __('Russian', ''),'sm' => __('Samoan', ''),'gd' => __('Scots Gaelic', ''),'sr' => __('Serbian', ''),'st' => __('Sesotho', ''),'sn' => __('Shona', ''),'sd' => __('Sindhi', ''),'si' => __('Sinhala', ''),'sk' => __('Slovak', ''),'sl' => __('Slovenian', ''),'so' => __('Somali', ''),'es' => __('Spanish', ''),'su' => __('Sundanese', ''),'sw' => __('Swahili', ''),'sv' => __('Swedish', ''),'tg' => __('Tajik', ''),'ta' => __('Tamil', ''),'tt' => __('Tatar', ''),'te' => __('Telugu', ''),'th' => __('Thai', ''),'tr' => __('Turkish', ''),'tk' => __('Turkmen', ''),'uk' => __('Ukrainian', ''),'ur' => __('Urdu', ''),'ug' => __('Uyghur', ''),'uz' => __('Uzbek', ''),'vi' => __('Vietnamese', ''),'cy' => __('Welsh', ''),'xh' => __('Xhosa', ''),'yi' => __('Yiddish', ''),'yo' => __('Yoruba', ''),'zu' => __('Zulu', '')
@@ -312,7 +298,7 @@ function woocommerce_paynext_init()
                 'additional_value' => array(
                     'title' => __('Additional Value', ''),
                     'type' => 'textarea', 
-                        'class' => 'ao1_paynext hide',
+                        'class' => 'ao1_paynext',
                         'css' => '',
                     'description' => __('', '')
                 )
