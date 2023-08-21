@@ -747,7 +747,7 @@ function woocommerce_paynext_init()
                 } else { // Pending
                     // Add a notice and link to go back to the previous checkout page
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' ); 
-                    $order->add_order_note('payment pending - cError: ' . $error_3ds . "log: " . $response_encode );
+                    $order->add_order_note('payment pending - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
                     $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
                     $order->update_status($this->status_pending);                  
                      update_post_meta( $order_id, 'transaction_id', $transaction_id );
