@@ -207,6 +207,8 @@ function woocommerce_paynext_init()
                     'title' => __('Payment Type', ''),
                     'default' => 'host',
                     'type' => 'select',
+                        'class' => 'ao1_paynext',
+                        'css' => '',
                     'options' => array(
                         'card' => __('Card Payment Gateway (Direct by Curl)', ''),
                         'host' => __('Payment Gateway (Re-Direct)', '')
@@ -218,7 +220,7 @@ function woocommerce_paynext_init()
                     'default' => 'no',
                     'type' => 'select',
                         'class' => 'ao1_paynext',
-                        'css' => 'display:none;',
+                        'css' => '',
                     'options' => array(
                         'yes' => __('3DS Validation A', ''),
                         'no' => __('3DS Validation B', '')
