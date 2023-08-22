@@ -610,20 +610,17 @@ function woocommerce_paynext_init()
                     curl_close($curl);
                     $results  = json_decode($response, true);
 
-                    if ( $results['response']['code'] == '200' ) {
-                        $results = json_decode( $results['body'], true );
-                    }
-                    
-                    if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {  //old version 
-                        
-                    } else { // latest version 
-                        
-                    }
 
-                    $redirecturls = json_decode($results["authurl"]);
-                    $status_nm = (int) ($results["status_nm"]);
+                    $status_nm = (int) ($results['status_nm']);
 
                     $sub_query = http_build_query($results);
+
+                    $result_sub_query = urldecode($sub_query);
+                    // Convert the URL-encoded string to an array
+                    parse_str($data, $dataArray);
+
+                    $redirecturls = $dataArray['authurl'];
+
 
                     if ($status_nm == 1 || $status_nm == 9) {
                         $redirecturl = $curlPost["success_url"];
