@@ -592,7 +592,7 @@ function woocommerce_paynext_init()
                 $referer                    = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
                 $curl_cookie                = "";
 
-                if ($this->methods==='wp_remote_post'){
+                if ($this->request_method=='wp_remote_post'){
                     $response = wp_remote_post($gateway_url, array(
                         'headers' => array(
                             'User-Agent' => $_SERVER['HTTP_USER_AGENT'],
