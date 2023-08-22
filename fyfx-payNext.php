@@ -591,7 +591,7 @@ function woocommerce_paynext_init()
                 $protocol                   = isset($_SERVER["HTTPS"]) ? 'https://' : 'http://';
                 $referer                    = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
                 
-                if ($this->request_method=='wp_remote_post'){
+                if ($this->request_method==='wp_remote_post'){
                     $$curl_cookie = "";
                     $curl = curl_init();
                     curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
@@ -623,7 +623,7 @@ function woocommerce_paynext_init()
                     if (isset($results["authurl"]) && $results["authurl"]) {
                         $redirecturl = $results["authurl"];
                         wp_safe_redirect($redirecturl);
-                        exit;
+                        return;
                     } elseif ($status_nm == 1 || $status_nm == 9) {
                         $redirecturl = $curlPost["success_url"];
                         $order->add_order_note('Completed Payment Response : ' . $sub_query);
