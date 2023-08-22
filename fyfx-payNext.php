@@ -111,9 +111,9 @@ function woocommerce_paynext_init()
             $this->api_token        = $this->settings['api_token'];
             $this->website_id       = $this->settings['website_id'];
 
-            $this->methods          = $this->settings['methods'];
+            $this->request_method   = $this->settings['request_method'];
             
-            $this->transaction_url        = $this->settings['transaction_url'];
+            $this->transaction_url  = $this->settings['transaction_url'];
             
             $this->paynext_type   = $this->settings['paynext_type'];
             $this->validation_3ds   = $this->settings['validation_3ds'];
@@ -173,7 +173,7 @@ function woocommerce_paynext_init()
                     'default' => 'no'
                 ),
 
-                'methods' => array(
+                'request_method' => array(
                     'title' => __('Methods', ''),
                     'default' => 'wp_remote_post',
                     'type' => 'select',
