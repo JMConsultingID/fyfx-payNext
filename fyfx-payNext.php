@@ -677,8 +677,8 @@ function woocommerce_paynext_init()
                         // If the response is JSON:
                         $responseArray = json_decode($response_body, true);
 
-                        update_post_meta( $order_id, 'auth_url_1', $redirecturl );
-                        update_post_meta( $order_id, 'auth_url_2', $responseArray );
+                        update_post_meta( $order_id, 'auth_url_1_s', $redirecturl );
+                        update_post_meta( $order_id, 'auth_url_2_S', $responseArray );
                     }
                 }
                 
