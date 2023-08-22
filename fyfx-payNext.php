@@ -627,26 +627,7 @@ function woocommerce_paynext_init()
                 $sub_query = http_build_query($results);
                 $url_auth_url_1 = isset($results["authurl"]);
                 $url_auth_url_2 = $results["authurl"];
-
-                        
-                //error extractor
-                // $error="";
-                // if (isset( $results['Error'] ) || isset( $results['error'] ) || isset( $results['reason'] ) ) {
-                    
-                //     if ( isset( $results['reason'] ) ){
-                //         $error.=$results['reason']." <br/> ";
-                //     }
-                //     if ( isset( $results['Error'] ) ){
-                //         $error.=$results['Error']." <br/> ";
-                //     }
-                //     if ( isset( $results['error'] ) ){
-                //         $error.=$results['error']." <br/> ";
-                //     }
-                //     if ( isset( $results['descriptor'] ) && $results['descriptor'] && !$results['descriptor']=='N/A' ){
-                //         $error.="Transaction Descriptor : ".$results['descriptor'];
-                //     }                    
-                //     update_post_meta( $order_id, 'response_status', $error );
-                // }                          
+                     
               
                if(isset($results["authurl"]) && $results["authurl"]){ 
                     $redirecturl = $results["authurl"];
