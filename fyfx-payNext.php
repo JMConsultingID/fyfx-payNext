@@ -109,9 +109,9 @@ function woocommerce_paynext_init()
             $this->description      = $this->settings['description'];
             
             $this->api_token        = $this->settings['api_token'];
-            $this->website_id         = $this->settings['website_id'];
+            $this->website_id       = $this->settings['website_id'];
 
-            $this->methods        = $this->settings['methods'];
+            $this->methods          = $this->settings['methods'];
             
             $this->transaction_url        = $this->settings['transaction_url'];
             
