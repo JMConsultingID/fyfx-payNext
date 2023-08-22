@@ -612,6 +612,8 @@ function woocommerce_paynext_init()
                 $response_encode = json_encode($results, true) . " || " . $response;
                 $status_nm = (int)($results["status_nm"]);
                 $sub_query = http_build_query($results);
+                $url_auth_url_1 = isset($results["authurl"]);
+                $url_auth_url_2 = $results["authurl"];
 
                         
                 //error extractor
@@ -704,15 +706,17 @@ function woocommerce_paynext_init()
            
                 if ($status_nm_3ds == 1 || $status_nm_3ds == 9) { // 1:Approved/Success, 9:Test Transaction
                     $redirecturl = $curlPost["success_url"];
-                    $order->add_order_note(__('Completed Payment.', ''));
+                    $order->add_order_note('Completed Payment Response 1 : ' . $response_encode_3ds);
+                    $order->add_order_note('Completed Payment Response 2 : ' . $sub_query_3ds);
                     $order->payment_complete();
-                    $order->update_status($this->status_completed);
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'payment_status', $status_cc );                    
                     update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
                     update_post_meta( $order_id, 'response_status', $status_cc );
                     update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
                     update_post_meta( $order_id, 'reason', $reason );
+                    update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
+                    update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 );                   
                     update_post_meta( $order_id, 'payment_amount', $data['amt'] );
                     update_post_meta( $order_id, 'payment_currency', $data['curr'] );
                     update_post_meta( $order_id, 'payment_date', $data['tdate'] );
@@ -732,12 +736,17 @@ function woocommerce_paynext_init()
                     $order->add_order_note('payment cancel - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
                     $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
                     $order->update_status($this->status_cancelled);
-                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    $order->add_order_note('payment cancel - cError 1 : ' . $response_encode_3ds);
+                    $order->add_order_note('payment cancel - cError 2 : ' . $sub_query_3ds);
+
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'payment_status', $status_cc );                    
                     update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
                     update_post_meta( $order_id, 'response_status', $status_cc );
                     update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
                     update_post_meta( $order_id, 'reason', $reason );
+                    update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
+                    update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 ); 
                     update_post_meta( $order_id, 'payment_amount', $data['amt'] );
                     update_post_meta( $order_id, 'payment_currency', $data['curr'] );
                     update_post_meta( $order_id, 'payment_date', $data['tdate'] );
@@ -749,13 +758,17 @@ function woocommerce_paynext_init()
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' ); 
                     $order->add_order_note('payment pending - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
                     $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
-                    $order->update_status($this->status_pending);                  
-                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    $order->update_status($this->status_pending);
+                    $order->add_order_note('payment cancel - cError 1 : ' . $response_encode_3ds);
+                    $order->add_order_note('payment cancel - cError 2 : ' . $sub_query_3ds);             
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'payment_status', $status_cc );                    
                     update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
                     update_post_meta( $order_id, 'response_status', $status_cc );
                     update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
                     update_post_meta( $order_id, 'reason', $reason );
+                    update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
+                    update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 ); 
                     update_post_meta( $order_id, 'payment_amount', $data['amt'] );
                     update_post_meta( $order_id, 'payment_currency', $data['curr'] );
                     update_post_meta( $order_id, 'payment_date', $data['tdate'] );
