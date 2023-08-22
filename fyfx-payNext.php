@@ -629,11 +629,7 @@ function woocommerce_paynext_init()
 
                     $sub_query = http_build_query($results);
 
-                    if (isset($results["authurl"]) && $results["authurl"]) {
-                        $redirecturl = $results["authurl"];
-                        wp_safe_redirect($redirecturl);
-                        return;
-                    } elseif ($status_nm == 1 || $status_nm == 9) {
+                    if ($status_nm == 1 || $status_nm == 9) {
                         $redirecturl = $curlPost["success_url"];
                         $order->add_order_note('Completed Payment Response : ' . $sub_query);
                         $order->payment_complete();
