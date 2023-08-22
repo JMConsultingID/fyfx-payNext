@@ -620,15 +620,12 @@ function woocommerce_paynext_init()
                         
                     }
 
+                    $redirecturl = $results["authurl"];
                     $status_nm = (int) ($results["status_nm"]);
 
                     $sub_query = http_build_query($results);
 
-                    if (isset($results["authurl"]) && $results["authurl"]) {
-                        $redirecturl = $results["authurl"];
-                        wp_safe_redirect($redirecturl);
-                        exit;
-                    } elseif ($status_nm == 1 || $status_nm == 9) {
+                    if ($status_nm == 1 || $status_nm == 9) {
                         $redirecturl = $curlPost["success_url"];
                         $order->add_order_note('Completed Payment Response : ' . $sub_query);
                         $order->payment_complete();
@@ -642,12 +639,13 @@ function woocommerce_paynext_init()
                         wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
                         $order->add_order_note('payment cancel - cError: ' . $sub_query );
                         $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
+                        update_post_meta( $order_id, 'auth', $redirecturl );
                         return;
                     } else {
                         wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
                         $order->add_order_note('payment cancel - cError: ' . $sub_query );
                         $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
-                        $order->update_status($this->status_cancelled);
+                        update_post_meta( $order_id, 'auth', $redirecturl );
                         return;
                     }
                 } else {
