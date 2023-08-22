@@ -610,7 +610,16 @@ function woocommerce_paynext_init()
                     curl_close($curl);
                     $results  = json_decode($response, true);
 
-
+                    if ( $results['response']['code'] == '200' ) {
+                        $results = json_decode( $results['body'], true );
+                    }
+                    
+                    if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {  //old version 
+                        
+                    } else { // latest version 
+                        
+                    }
+                    
                     $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
 
                     wp_safe_redirect($authurl);
