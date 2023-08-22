@@ -658,8 +658,8 @@ function woocommerce_paynext_init()
                         // If the response is JSON:
                         $responseArray = json_decode($response_body, true);
 
-                        update_post_meta( $order_id, 'auth_url_1_s', $redirecturl );
-                        update_post_meta( $order_id, 'auth_url_2_S', $responseArray );
+                        update_post_meta( $order_id, 'auth_urls_1', $redirecturl );
+                        update_post_meta( $order_id, 'auth_urls_2', $responseArray );
                     }
                 }
                 
@@ -727,7 +727,7 @@ function woocommerce_paynext_init()
                 } elseif ($status_nm_3ds == 2 || $status_nm_3ds == 22 || $status_nm_3ds == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
                     // Add a notice and link to go back to the previous checkout page
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
-                    $order->add_order_note('payment cancel - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
+                    $order->add_order_note('Payment Cancel - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
                     $order->add_order_note(__('<button id="'.$responseArray['transaction_id'].'" api="'.$responseArray['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));                    
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'payment_status', $status_cc );                    
@@ -747,7 +747,7 @@ function woocommerce_paynext_init()
                 } else { // Pending
                     // Add a notice and link to go back to the previous checkout page
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' ); 
-                    $order->add_order_note('payment pending - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
+                    $order->add_order_note('Payment Pending - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
                     $order->add_order_note(__('<button id="'.$responseArray['transaction_id'].'" api="'.$responseArray['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));                    
                     $order->add_order_note('payment cancel - cError 1 : ' . $response_encode_3ds);
                     $order->add_order_note('payment cancel - cError 2 : ' . $sub_query_3ds);             
@@ -764,8 +764,8 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'payment_date', $responseArray['tdate'] );
                     update_post_meta( $order_id, 'payment_descriptor', $responseArray['descriptor'] );                    
                     update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
-                    return;
                     $order->update_status($this->status_pending);
+                    return;                   
                 }               
 
             }
