@@ -110,6 +110,8 @@ function woocommerce_paynext_init()
             
             $this->api_token        = $this->settings['api_token'];
             $this->website_id         = $this->settings['website_id'];
+
+            $this->methods        = $this->settings['methods'];
             
             $this->transaction_url        = $this->settings['transaction_url'];
             
@@ -170,6 +172,17 @@ function woocommerce_paynext_init()
                     'label' => __('Payment Module.', ''),
                     'default' => 'no'
                 ),
+
+                'methods' => array(
+                    'title' => __('Methods', ''),
+                    'default' => 'wp_remote_post',
+                    'type' => 'select',
+                    'options' => array(
+                        'wp_remote_post' => __('WP_REMOTE_POST', ''),
+                        'curl' => __('CURL', '')
+                    )
+                ),
+                
                 
                 'website_id' => array(
                     'title' => __('WEBSITE ID', ''),
@@ -518,7 +531,7 @@ function woocommerce_paynext_init()
                 $curlPost["website_id"]       = $this->website_id; // Website Id 
                 //<!--default (fixed) value * default -->
                 $curlPost["cardsend"]       = "curl";
-                $curlPost["client_ip"]      = ($_SERVER['HTTP_X_FORWARDED_FOR']?$_SERVER['HTTP_X_FORWARDED_FOR']:$_SERVER['REMOTE_ADDR']);
+                $curlPost["client_ip"]      = wp_get_referer();
                 $curlPost["action"]         = "product";
                 $curlPost["source"]         = "Curl-Direct (WV " . WOOCOMMERCE_VERSION . ")";
                 //<!--product price,curr and product name * by cart total amount -->
@@ -578,205 +591,228 @@ function woocommerce_paynext_init()
                 $protocol                   = isset($_SERVER["HTTPS"]) ? 'https://' : 'http://';
                 $referer                    = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
                 $curl_cookie                = "";
-                $curl                       = curl_init();
-                curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
-                curl_setopt($curl, CURLOPT_URL, $gateway_url);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-                curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-                curl_setopt($curl, CURLOPT_REFERER, $referer);
-                curl_setopt($curl, CURLOPT_POST, 1);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPost);
-                curl_setopt($curl, CURLOPT_TIMEOUT, 300);
-                curl_setopt($curl, CURLOPT_HEADER, 0);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
-                $response = curl_exec($curl);
-                curl_close($curl);
-                $results  = json_decode($response, true);
 
-                
+                if ($this->methods==='wp_remote_post'){
+                    $response = wp_remote_post($gateway_url, array(
+                        'headers' => array(
+                            'User-Agent' => $_SERVER['HTTP_USER_AGENT'],
+                            'Referer' => $referer
+                        ),
+                        'body' => $curlPost
+                    ));
+                    if (is_wp_error($response)) {
+                        $error_message = $response->get_error_message();
+                        echo "Something went wrong: $error_message";
+                        exit;
+                    }
 
-                if ( $results['response']['code'] == '200' ) {
-                    $results = json_decode( $results['body'], true );
-                }
-                
-                if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {  //old version 
+                    $response_body = wp_remote_retrieve_body($response);
+                    $results = json_decode($response_body, true);
+
+
+                    if (
+                        (isset($results["Error"]) && ($results["Error"])) ||
+                        (isset($results["error"]) && ($results["error"]))
+                    ) {
+                        print_r($results);
+                        exit;
+                    }
+
+                    $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
+
+                    wp_safe_redirect($authurl);
+                    exit;
+
+                    $status_nm = (int) ($results["status_nm"]);
+
+                    $sub_query = http_build_query($results);
+
+                    if (isset($results["authurl"]) && $results["authurl"]) {
+                        $redirecturl = $results["authurl"];
+                        wp_safe_redirect($redirecturl);
+                        exit;
+                    } elseif ($status_nm == 1 || $status_nm == 9) {
+                        $redirecturl = $curlPost["success_url"];
+                        $order->add_order_note('Completed Payment Response : ' . $sub_query);
+                        $order->payment_complete();
+                        update_post_meta( $order_id, 'sub_query_3ds', $sub_query );
+                        $woocommerce->cart->empty_cart();  
+                        return array(
+                            'result' => 'success',
+                            'redirect' => $this->get_return_url($order)
+                        );
+                    } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) {
+                        wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
+                        $order->add_order_note('payment cancel - cError: ' . $sub_query );
+                        $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
+                        return;
+                    } else {
+                        wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
+                        $order->add_order_note('payment cancel - cError: ' . $sub_query );
+                        $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
+                        $order->update_status($this->status_cancelled);
+                        return;
+                    }
+                } else {
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+                    curl_setopt($curl, CURLOPT_URL, $gateway_url);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+                    curl_setopt($curl, CURLOPT_REFERER, $referer);
+                    curl_setopt($curl, CURLOPT_POST, 1);
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPost);
+                    curl_setopt($curl, CURLOPT_TIMEOUT, 300);
+                    curl_setopt($curl, CURLOPT_HEADER, 0);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
+                    $response = curl_exec($curl);
+                    curl_close($curl);
+                    $results  = json_decode($response, true);
+
+                    if ( $results['response']['code'] == '200' ) {
+                        $results = json_decode( $results['body'], true );
+                    }
                     
-                } else { // latest version 
-                    
-                }
-                
-
-                $status = $results["status"];
-                $response_encode = json_encode($results, true) . " || " . $response;
-                $status_nm = (int)($results["status_nm"]);
-                $sub_query = http_build_query($results);
-                $url_auth_url_1 = isset($results["authurl"]);
-                $url_auth_url_2 = $results["authurl"];
-
+                    if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {  //old version 
                         
-                //error extractor
-                // $error="";
-                // if (isset( $results['Error'] ) || isset( $results['error'] ) || isset( $results['reason'] ) ) {
-                    
-                //     if ( isset( $results['reason'] ) ){
-                //         $error.=$results['reason']." <br/> ";
-                //     }
-                //     if ( isset( $results['Error'] ) ){
-                //         $error.=$results['Error']." <br/> ";
-                //     }
-                //     if ( isset( $results['error'] ) ){
-                //         $error.=$results['error']." <br/> ";
-                //     }
-                //     if ( isset( $results['descriptor'] ) && $results['descriptor'] && !$results['descriptor']=='N/A' ){
-                //         $error.="Transaction Descriptor : ".$results['descriptor'];
-                //     }                    
-                //     update_post_meta( $order_id, 'response_status', $error );
-                // }                          
-              
-                
-               $validation_3ds = $this->validation_3ds;
-
-               $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
-
-
-                // Get the response from the URL
-                $response_auth_url = wp_remote_get($authurl);
-
-                // Check if the request was successful
-                if (is_wp_error($response_auth_url)) {
-                    return "Error fetching data.";
-                }
-
-                // Get the response body and decode the JSON data
-                $response_body = wp_remote_retrieve_body($response_auth_url);
-                $data = json_decode($response_body, true);
-
-                // Check if the response was successfully decoded
-                if (!$data) {
-                    return "Error decoding JSON data.";
-                }
-
-                //error extractor
-                $error_3ds="";
-                if (isset( $data['Error'] ) || isset( $data['error'] ) || isset( $data['reason'] ) ) {
-                    
-                    if ( isset( $data['reason'] ) ){
-                        $error_3ds.=$data['reason']." <br/> ";
-                    }
-                    if ( isset( $data['Error'] ) ){
-                        $error_3ds.=$data['Error']." <br/> ";
-                    }
-                    if ( isset( $data['error'] ) ){
-                        $error_3ds.=$data['error']." <br/> ";
-                    }
-                    if ( isset( $data['descriptor'] ) && $data['descriptor'] && !$data['descriptor']=='N/A' ){
-                        $error_3ds.="Transaction Descriptor : ".$data['descriptor'];
-                    }
-                    
-                    update_post_meta( $order_id, 'response_status', $error_3ds);
-                } 
-
-                // if(isset($data["status"]))
-                //    {
-                //         update_post_meta( $order_id, 'payment_amount', $results['amt'] );
-                //         update_post_meta( $order_id, 'payment_currency', $results['curr'] );
-                //         update_post_meta( $order_id, 'payment_date', $results['tdate'] );
-                //         update_post_meta( $order_id, 'payment_descriptor', $results['descriptor'] );
-                //         update_post_meta( $order_id, 'payment_status', $results["status"] );
-                //         update_post_meta( $order_id, 'transaction_id', $results['transaction_id'] );
-                //         update_post_meta( $order_id, 'status_nm', $status_nm );
-                //         update_post_meta( $order_id, 'sub_query', $sub_query );
-                //         update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
+                    } else { // latest version 
                         
-                //         $order->add_order_note(__('<button id="'.$results['transaction_id'].'" api="'.$results['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
+                    }
                     
-                //    }     
 
-                $response_encode_3ds = json_encode($data, true) . " || " . $response_body;
-                $sub_query_3ds = http_build_query($data);
+                    $status = $results["status"];
+                    $response_encode = json_encode($results, true) . " || " . $response;
+                    $status_nm = (int)($results["status_nm"]);
+                    $sub_query = http_build_query($results);
+                    $url_auth_url_1 = isset($results["authurl"]);
+                    $url_auth_url_2 = $results["authurl"];
+                    
+                   $validation_3ds = $this->validation_3ds;
 
-                // Extract the required information from the response
-                $status_nm_3ds = $data["status_nm"];
-                $status_cc = $data["status"];
-                $transaction_id = $data["transaction_id"];
-                $reason = $data["reason"];
+                   $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
 
-           
-                if ($status_nm_3ds == 1 || $status_nm_3ds == 9) { // 1:Approved/Success, 9:Test Transaction
-                    $redirecturl = $curlPost["success_url"];
-                    $order->add_order_note('Completed Payment Response 1 : ' . $response_encode_3ds);
-                    $order->add_order_note('Completed Payment Response 2 : ' . $sub_query_3ds);
-                    $order->payment_complete();
-                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
-                    update_post_meta( $order_id, 'payment_status', $status_cc );                    
-                    update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
-                    update_post_meta( $order_id, 'response_status', $status_cc );
-                    update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
-                    update_post_meta( $order_id, 'reason', $reason );
-                    update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
-                    update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 );                   
-                    update_post_meta( $order_id, 'payment_amount', $data['amt'] );
-                    update_post_meta( $order_id, 'payment_currency', $data['curr'] );
-                    update_post_meta( $order_id, 'payment_date', $data['tdate'] );
-                    update_post_meta( $order_id, 'payment_descriptor', $data['descriptor'] );                    
-                    update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
-                    $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));               
-                    // this is important part for empty cart
-                    $woocommerce->cart->empty_cart();  
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $this->get_return_url($order)
-                    );                  
+                    // Get the response from the URL
+                    $response_auth_url = wp_remote_get($authurl);
 
-                } elseif ($status_nm_3ds == 2 || $status_nm_3ds == 22 || $status_nm_3ds == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
-                    // Add a notice and link to go back to the previous checkout page
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
-                    $order->add_order_note('payment cancel - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
-                    $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
-                    $order->update_status($this->status_cancelled);
-                    $order->add_order_note('payment cancel - cError 1 : ' . $response_encode_3ds);
-                    $order->add_order_note('payment cancel - cError 2 : ' . $sub_query_3ds);
+                    // Check if the request was successful
+                    if (is_wp_error($response_auth_url)) {
+                        return "Error fetching data.";
+                    }
 
-                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
-                    update_post_meta( $order_id, 'payment_status', $status_cc );                    
-                    update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
-                    update_post_meta( $order_id, 'response_status', $status_cc );
-                    update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
-                    update_post_meta( $order_id, 'reason', $reason );
-                    update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
-                    update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 ); 
-                    update_post_meta( $order_id, 'payment_amount', $data['amt'] );
-                    update_post_meta( $order_id, 'payment_currency', $data['curr'] );
-                    update_post_meta( $order_id, 'payment_date', $data['tdate'] );
-                    update_post_meta( $order_id, 'payment_descriptor', $data['descriptor'] );                    
-                    update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
-                    return;
-                } else { // Pending
-                    // Add a notice and link to go back to the previous checkout page
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' ); 
-                    $order->add_order_note('payment pending - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
-                    $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
-                    $order->update_status($this->status_pending);
-                    $order->add_order_note('payment cancel - cError 1 : ' . $response_encode_3ds);
-                    $order->add_order_note('payment cancel - cError 2 : ' . $sub_query_3ds);             
-                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
-                    update_post_meta( $order_id, 'payment_status', $status_cc );                    
-                    update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
-                    update_post_meta( $order_id, 'response_status', $status_cc );
-                    update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
-                    update_post_meta( $order_id, 'reason', $reason );
-                    update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
-                    update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 ); 
-                    update_post_meta( $order_id, 'payment_amount', $data['amt'] );
-                    update_post_meta( $order_id, 'payment_currency', $data['curr'] );
-                    update_post_meta( $order_id, 'payment_date', $data['tdate'] );
-                    update_post_meta( $order_id, 'payment_descriptor', $data['descriptor'] );                    
-                    update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
-                    return;
-                }               
+                    // Get the response body and decode the JSON data
+                    $response_body = wp_remote_retrieve_body($response_auth_url);
+                    $data = json_decode($response_body, true);
 
+                    // Check if the response was successfully decoded
+                    if (!$data) {
+                        return "Error decoding JSON data.";
+                    }
+
+                    //error extractor
+                    $error_3ds="";
+                    if (isset( $data['Error'] ) || isset( $data['error'] ) || isset( $data['reason'] ) ) {
+                        
+                        if ( isset( $data['reason'] ) ){
+                            $error_3ds.=$data['reason']." <br/> ";
+                        }
+                        if ( isset( $data['Error'] ) ){
+                            $error_3ds.=$data['Error']." <br/> ";
+                        }
+                        if ( isset( $data['error'] ) ){
+                            $error_3ds.=$data['error']." <br/> ";
+                        }
+                        if ( isset( $data['descriptor'] ) && $data['descriptor'] && !$data['descriptor']=='N/A' ){
+                            $error_3ds.="Transaction Descriptor : ".$data['descriptor'];
+                        }
+                        
+                        update_post_meta( $order_id, 'response_status', $error_3ds);
+                    } 
+
+                    $response_encode_3ds = json_encode($data, true) . " || " . $response_body;
+                    $sub_query_3ds = http_build_query($data);
+
+                    // Extract the required information from the response
+                    $status_nm_3ds = $data["status_nm"];
+                    $status_cc = $data["status"];
+                    $transaction_id = $data["transaction_id"];
+                    $reason = $data["reason"];
+
+               
+                    if ($status_nm_3ds == 1 || $status_nm_3ds == 9) { // 1:Approved/Success, 9:Test Transaction
+                        $redirecturl = $curlPost["success_url"];
+                        $order->add_order_note('Completed Payment Response 1 : ' . $response_encode_3ds);
+                        $order->add_order_note('Completed Payment Response 2 : ' . $sub_query_3ds);
+                        $order->payment_complete();
+                        update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                        update_post_meta( $order_id, 'payment_status', $status_cc );                    
+                        update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
+                        update_post_meta( $order_id, 'response_status_add', $status_cc );
+                        update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
+                        update_post_meta( $order_id, 'reason', $reason );
+                        update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
+                        update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 );                   
+                        update_post_meta( $order_id, 'payment_amount', $data['amt'] );
+                        update_post_meta( $order_id, 'payment_currency', $data['curr'] );
+                        update_post_meta( $order_id, 'payment_date', $data['tdate'] );
+                        update_post_meta( $order_id, 'payment_descriptor', $data['descriptor'] );                    
+                        update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
+                        $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));               
+                        // this is important part for empty cart
+                        $woocommerce->cart->empty_cart();  
+                        return array(
+                            'result' => 'success',
+                            'redirect' => $this->get_return_url($order)
+                        );                  
+
+                    } elseif ($status_nm_3ds == 2 || $status_nm_3ds == 22 || $status_nm_3ds == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
+                        // Add a notice and link to go back to the previous checkout page
+                        wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
+                        $order->add_order_note('payment cancel - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
+                        $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
+                        $order->update_status($this->status_cancelled);
+                        $order->add_order_note('payment cancel - cError 1 : ' . $response_encode_3ds);
+                        $order->add_order_note('payment cancel - cError 2 : ' . $sub_query_3ds);
+
+                        update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                        update_post_meta( $order_id, 'payment_status', $status_cc );                    
+                        update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
+                        update_post_meta( $order_id, 'response_status_add', $status_cc );
+                        update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
+                        update_post_meta( $order_id, 'reason', $reason );
+                        update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
+                        update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 ); 
+                        update_post_meta( $order_id, 'payment_amount', $data['amt'] );
+                        update_post_meta( $order_id, 'payment_currency', $data['curr'] );
+                        update_post_meta( $order_id, 'payment_date', $data['tdate'] );
+                        update_post_meta( $order_id, 'payment_descriptor', $data['descriptor'] );                    
+                        update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
+                        return;
+                    } else { // Pending
+                        // Add a notice and link to go back to the previous checkout page
+                        wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' ); 
+                        $order->add_order_note('payment pending - cError: ' . $error_3ds . "log: " . $response_encode_3ds );
+                        $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
+                        $order->update_status($this->status_pending);
+                        $order->add_order_note('payment cancel - cError 1 : ' . $response_encode_3ds);
+                        $order->add_order_note('payment cancel - cError 2 : ' . $sub_query_3ds);             
+                        update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                        update_post_meta( $order_id, 'payment_status', $status_cc );                    
+                        update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
+                        update_post_meta( $order_id, 'response_status_add', $status_cc );
+                        update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
+                        update_post_meta( $order_id, 'reason', $reason );
+                        update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
+                        update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 ); 
+                        update_post_meta( $order_id, 'payment_amount', $data['amt'] );
+                        update_post_meta( $order_id, 'payment_currency', $data['curr'] );
+                        update_post_meta( $order_id, 'payment_date', $data['tdate'] );
+                        update_post_meta( $order_id, 'payment_descriptor', $data['descriptor'] );                    
+                        update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
+                        return;
+                    }             
+                }
             }
         }
         
