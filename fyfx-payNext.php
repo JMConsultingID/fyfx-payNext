@@ -620,7 +620,7 @@ function woocommerce_paynext_init()
                         
                     }
 
-                    $redirecturl = json_decode($results["authurl"]);
+                    $redirecturls = json_decode($results["authurl"]);
                     $status_nm = (int) ($results["status_nm"]);
 
                     $sub_query = http_build_query($results);
@@ -637,13 +637,13 @@ function woocommerce_paynext_init()
                         );
                     } elseif ($status_nm == 2 || $status_nm == 22 || $status_nm == 23) {
                         wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. %s'.$redirecturl, 'fyfx-payNext'), $redirecturl ), 'error' );
-                        $order->add_order_note('payment cancel - cError: ' . $sub_query );
+                        $order->add_order_note('payment cancel - cError: ' . $redirecturls);
                         $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
                         update_post_meta( $order_id, 'auth', $redirecturl );
                         return;
                     } else {
                         wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. %s'.$redirecturl, 'fyfx-payNext'), $redirecturl ), 'error' );
-                        $order->add_order_note('payment cancel - cError: ' . $sub_query );
+                        $order->add_order_note('payment cancel - cError: ' . $redirecturls );
                         $order->add_order_note(__('<button id="'.$data['transaction_id'].'" api="'.$data['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
                         update_post_meta( $order_id, 'auth', $redirecturl );
                         return;
