@@ -617,7 +617,7 @@ function woocommerce_paynext_init()
 
                     $result_sub_query = urldecode($sub_query);
                     // Convert the URL-encoded string to an array
-                    parse_str($data, $dataArray);
+                    parse_str($result_sub_query, $dataArray);
 
                     $redirecturls = $dataArray['authurl'];
 
