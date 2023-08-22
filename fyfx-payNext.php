@@ -592,7 +592,7 @@ function woocommerce_paynext_init()
                 $referer                    = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
                 $curl_cookie                = "";
 
-                if ($this->request_method=='wp_remote_post'){
+                if ($this->request_method==='wp_remote_post'){
                     $curl = curl_init();
                     curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
                     curl_setopt($curl, CURLOPT_URL, $gateway_url);
@@ -620,20 +620,11 @@ function woocommerce_paynext_init()
                         
                     }
 
-                    $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
-
-                    wp_safe_redirect($authurl);
-                    exit;
-
                     $status_nm = (int) ($results["status_nm"]);
 
                     $sub_query = http_build_query($results);
 
-                    if (isset($results["authurl"]) && $results["authurl"]) {
-                        $redirecturl = $results["authurl"];
-                        wp_safe_redirect($redirecturl);
-                        exit;
-                    } elseif ($status_nm == 1 || $status_nm == 9) {
+                    if ($status_nm == 1 || $status_nm == 9) {
                         $redirecturl = $curlPost["success_url"];
                         $order->add_order_note('Completed Payment Response : ' . $sub_query);
                         $order->payment_complete();
