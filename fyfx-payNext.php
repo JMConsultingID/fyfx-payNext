@@ -599,14 +599,18 @@ function woocommerce_paynext_init()
                         ),
                         'body' => $curlPost
                     ));
-                    if (is_wp_error($response)) {
-                        $error_message = $response->get_error_message();
-                        echo "Something went wrong: $error_message";
-                        exit;
-                    }
 
                     $response_body = wp_remote_retrieve_body($response);
                     $results = json_decode($response_body, true);
+
+
+                    if (
+                        (isset($results["Error"]) && ($results["Error"])) ||
+                        (isset($results["error"]) && ($results["error"]))
+                    ) {
+                        print_r($results);
+                        exit;
+                    }
 
                     $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
 
