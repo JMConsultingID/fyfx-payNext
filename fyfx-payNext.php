@@ -590,8 +590,7 @@ function woocommerce_paynext_init()
                 
                 $protocol                   = isset($_SERVER["HTTPS"]) ? 'https://' : 'http://';
                 $referer                    = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-                $curl_cookie                = "";
-
+                
                 if ($this->request_method=='wp_remote_post'){
                     $response = wp_remote_post($gateway_url, array(
                         'headers' => array(
@@ -608,15 +607,6 @@ function woocommerce_paynext_init()
 
                     $response_body = wp_remote_retrieve_body($response);
                     $results = json_decode($response_body, true);
-
-
-                    if (
-                        (isset($results["Error"]) && ($results["Error"])) ||
-                        (isset($results["error"]) && ($results["error"]))
-                    ) {
-                        print_r($results);
-                        exit;
-                    }
 
                     $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
 
@@ -654,6 +644,7 @@ function woocommerce_paynext_init()
                         return;
                     }
                 } else {
+                    $curl_cookie = "";
                     $curl = curl_init();
                     curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
                     curl_setopt($curl, CURLOPT_URL, $gateway_url);
