@@ -592,16 +592,23 @@ function woocommerce_paynext_init()
                 $referer                    = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
                 
                 if ($this->request_method=='wp_remote_post'){
-                    $response = wp_remote_post($gateway_url, array(
-                        'headers' => array(
-                            'User-Agent' => $_SERVER['HTTP_USER_AGENT'],
-                            'Referer' => $referer
-                        ),
-                        'body' => $curlPost
-                    ));
-
-                    $response_body = wp_remote_retrieve_body($response);
-                    $results = json_decode($response_body, true);
+                    $$curl_cookie = "";
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+                    curl_setopt($curl, CURLOPT_URL, $gateway_url);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+                    curl_setopt($curl, CURLOPT_REFERER, $referer);
+                    curl_setopt($curl, CURLOPT_POST, 1);
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPost);
+                    curl_setopt($curl, CURLOPT_TIMEOUT, 300);
+                    curl_setopt($curl, CURLOPT_HEADER, 0);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
+                    $response = curl_exec($curl);
+                    curl_close($curl);
+                    $results  = json_decode($response, true);
 
 
                     $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $curlPost["api_token"] . "&id_order=" . $curlPost["id_order"];
