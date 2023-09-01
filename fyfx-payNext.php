@@ -608,20 +608,12 @@ function woocommerce_paynext_init()
                 $response = curl_exec($curl);
                 curl_close($curl);
                 $results  = json_decode($response, true);
+            
 
-                
-
-                if ( $results['response']['code'] == '200' ) {
-                    $results = json_decode( $results['body'], true );
+                if (isset($results['response']) && isset($results['response']['code']) && $results['response']['code'] == '200') {
+                    $results = json_decode($results['body'], true);
                 }
                 
-                if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {  //old version 
-                    
-                } else { // latest version 
-                    
-                }
-                
-
                 $status = $results["status"];
                 $response_encode = json_encode($results, true) . " || " . $response;
                 $status_nm = (int)($results["status_nm"]);
