@@ -127,10 +127,10 @@ function woocommerce_paynext_init()
           //  add_action('woocommerce_api_wc_tasaction_status', array(  $this, 'check_trasaction'));
             
             
-            add_action('woocommerce_api_wc_paynext', array(
-                $this,
-                'check_paynext_response'
-            ));
+            //add_action('woocommerce_api_wc_paynext', array(
+               // $this,
+                //'check_paynext_response'
+            //));
             
             add_action('valid-paynext-request', array(
                 $this,
