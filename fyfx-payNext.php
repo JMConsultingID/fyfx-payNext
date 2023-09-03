@@ -609,7 +609,7 @@ function woocommerce_paynext_init()
                 curl_close($curl);
                 $results  = json_decode($response, true);
 
-                if (empty($results)){
+                if (empty($response)){
                     update_post_meta( $order_id, 'payment_status', 'failed - no response from paynext ' .$results );
                     update_post_meta( $order_id, 'reason', 'Max. transactions allowed within (1 days)' );                   
                     error_log('Payment API response error: Error Response Code : Empty Result - '. $results.'-'. $response);
