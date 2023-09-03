@@ -639,7 +639,7 @@ function woocommerce_paynext_init()
                     update_post_meta($order_id, 'reason', 'Empty API response '.$error);
                     error_log('Payment API response error: Empty Result '.$error);
                     wc_get_logger()->error('WC Payment API result error: Empty Result '.$error);
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Your Credit Card is Declined By Your Bank.</p>')), 'error' );
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Declined.</p>')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
