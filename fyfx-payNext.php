@@ -1157,8 +1157,8 @@ function add_custom_script_to_footer() {
 }
 
 // Tambahkan filter untuk mengubah pesan error checkout
-add_filter('woocommerce_add_error', 'custom_checkout_error_message', 10, 3);
-function custom_checkout_error_message($message, $error_code, $error) {
+add_filter('woocommerce_add_error', 'custom_checkout_error_message_paynext', 10, 3);
+function custom_checkout_error_message_paynext($message, $error_code, $error) {
 
     // Ganti pesan error sesuai kebutuhan Anda
     if ($error_code === 'payment') {
