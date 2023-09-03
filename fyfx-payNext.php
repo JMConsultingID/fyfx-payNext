@@ -630,11 +630,6 @@ function woocommerce_paynext_init()
                 $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $api_token . "&transaction_id=" . $transaction_id;
                 $url_auth_url_1 = isset($results["authurl"]);
                 $url_auth_url_2 = $results["authurl"];
-
-                if (empty($results["authurl"])){
-                    
-                }
-                     
               
                if(isset($results["authurl"]) && $results["authurl"]){ 
                     if (empty($results["authurl"])){
