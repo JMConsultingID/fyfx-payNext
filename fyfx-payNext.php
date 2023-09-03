@@ -607,7 +607,7 @@ function woocommerce_paynext_init()
                 curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
                 $response = curl_exec($curl);
                 curl_close($curl);
-                $results  = json_decode($response, true);
+                $results  = json_encode( $results , true) . " || " . $response ;
 
                 if (!empty($results)) {
                 $http_status_code = wp_remote_retrieve_response_code($results);
@@ -623,7 +623,7 @@ function woocommerce_paynext_init()
                     update_post_meta($order_id, 'reason', 'Empty API response');
                     error_log('Payment API response error: Empty Result');
                     wc_get_logger()->error('WC Payment API result error: Empty Result');
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : '.$http_status_code.'.</p>')), 'error' );
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : '.$response.'.</p>')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
