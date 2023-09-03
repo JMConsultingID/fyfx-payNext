@@ -654,7 +654,7 @@ function woocommerce_paynext_init()
                     // Arguments for POST request - if you have specific data to post, add it in the 'body' key
                     $args = array(
                         'method' => 'POST',
-                        'timeout' => 20,
+                        'timeout' => 10,
                         'redirection' => 5, // Maximum number of redirects
                         'httpversion' => '1.0',
                         'blocking' => true,
