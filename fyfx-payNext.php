@@ -594,8 +594,8 @@ function woocommerce_paynext_init()
                 $curl                       = curl_init();
                 curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
                 curl_setopt($curl, CURLOPT_URL, $gateway_url);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 1);
                 curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
                 curl_setopt($curl, CURLOPT_REFERER, $referer);
                 curl_setopt($curl, CURLOPT_POST, 1);
@@ -609,15 +609,35 @@ function woocommerce_paynext_init()
                 curl_close($curl);
                 $results  = json_decode($response, true);
 
-                if (empty($response)){
-                    update_post_meta( $order_id, 'payment_status', 'failed - no response from paynext ' .$results );
-                    update_post_meta( $order_id, 'reason', 'Max. transactions allowed within (1 days)' );                   
-                    error_log('Payment API response error: Error Response Code : Empty Result - '. $results.'-'. $response);
-                    wc_get_logger()->error('WC Payment API response error: Error Response Code : Empty Result - '. $results.'-'. $response);
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Scrubbed Reason :  Max. transactions allowed within (1 days)</p>', 'fyfx-payNext')), 'error' );
+                if (!empty($results)) {
+                $http_status_code = wp_remote_retrieve_response_code($results);
+                $response_body = wp_remote_retrieve_body($results);
+
+                    if ($http_status_code === 200) {
+                        $results = json_decode($response_body, true);
+                        // Lanjutkan pengolahan data
+                    } else {
+                        // Handle error response
+                        update_post_meta($order_id, 'payment_status', 'failed - error response');
+                        update_post_meta($order_id, 'reason', 'Payment API error');
+                        error_log('Payment API response error: HTTP Status Code ' . $http_status_code);
+                        wc_get_logger()->error('WC Payment API result error: HTTP Status Code ' . $http_status_code);
+                        wc_get_logger()->error('WC Payment API response error: ' . $response_body);
+                        wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : '.$http_status_code.'.</p>')), 'error' );
+                        $order->update_status($this->status_pending);
+                        return;
+                    }
+                } else {
+                    // Handle empty response
+                    update_post_meta($order_id, 'payment_status', 'failed - empty response');
+                    update_post_meta($order_id, 'reason', 'Empty API response');
+                    error_log('Payment API response error: Empty Result');
+                    wc_get_logger()->error('WC Payment API result error: Empty Result');
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : '.$http_status_code.'.</p>')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
+
             
         
                 $status = $results["status"];
