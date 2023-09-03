@@ -610,6 +610,22 @@ function woocommerce_paynext_init()
                 $results  = json_decode($response, true);
 
                 $response_encode =  json_encode( $results , true) . " || " . $response ; 
+
+                $error="card declined";
+                if (isset( $results['Error'] ) || isset( $results['error'] ) || isset( $results['reason'] ) ) {                    
+                    if ( isset( $results['reason'] ) ){
+                        $error.=$results['reason']." <br/> ";
+                    }
+                    if ( isset( $results['Error'] ) ){
+                        $error.=$results['Error']." <br/> ";
+                    }
+                    if ( isset( $results['error'] ) ){
+                        $error.=$results['error']." <br/> ";
+                    }
+                    if ( isset( $results['descriptor'] ) && $results['descriptor'] && !$results['descriptor']=='N/A' ){
+                        $error.="Transaction Descriptor : ".$results['descriptor'];
+                    }
+                }
                 
                 if (!empty($results)) {
                 $http_status_code = wp_remote_retrieve_response_code($results);
@@ -619,11 +635,11 @@ function woocommerce_paynext_init()
                     } 
                 } else {
                     // Handle empty response
-                    update_post_meta($order_id, 'payment_status', 'failed - empty response '.$response_encode);
-                    update_post_meta($order_id, 'reason', 'Empty API response '.$response_encode);
-                    error_log('Payment API response error: Empty Result '.$response_encode);
-                    wc_get_logger()->error('WC Payment API result error: Empty Result '.$response_encode);
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : '.$response_encode.'.</p>')), 'error' );
+                    update_post_meta($order_id, 'payment_status', 'failed - empty response '.$error);
+                    update_post_meta($order_id, 'reason', 'Empty API response '.$error);
+                    error_log('Payment API response error: Empty Result '.$error);
+                    wc_get_logger()->error('WC Payment API result error: Empty Result '.$error);
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Your Credit Card is Declined By Your Bank.</p>')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
