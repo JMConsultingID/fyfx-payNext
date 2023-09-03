@@ -618,17 +618,7 @@ function woocommerce_paynext_init()
                     return;
                 }
             
-                if (isset($results['response']) && isset($results['response']['code']) && $results['response']['code'] == '200') {
-                    $results = json_decode($results['body'], true);
-                } else {
-                    update_post_meta( $order_id, 'error_payment','empty response code body '.$results["Error"]  );                    
-                    error_log('Payment API response error: ' . print_r($results, true));
-                    wc_get_logger()->error('Payment API response error: ' . print_r($results, true));
-                    wc_add_notice( sprintf( __('02 We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
-                    $order->update_status($this->status_pending);
-                    return;
-                }
-                
+        
                 $status = $results["status"];
                 $response_encode = json_encode($results, true) . " || " . $response;
                 $status_nm = (int)($results["status_nm"]);
