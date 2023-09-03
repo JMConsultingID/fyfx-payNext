@@ -601,7 +601,7 @@ function woocommerce_paynext_init()
                 curl_setopt($curl, CURLOPT_POST, 1);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPost);
                 curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
-                curl_setopt($curl, CURLOPT_TIMEOUT, 20);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 10);
                 curl_setopt($curl, CURLOPT_HEADER, 0);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
@@ -733,6 +733,17 @@ function woocommerce_paynext_init()
                         'redirect' => $this->get_return_url($order)
                     );                  
 
+                } elseif ($status_nm_3ds == 9) { // 9 = Test Payment
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Your Credit Card is Test Payment, Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
+                    $order->add_order_note('Payment Cancel - cError: Test Paymet Card');
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    update_post_meta( $order_id, 'payment_status', $status_cc );                    
+                    update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
+                    update_post_meta( $order_id, 'response_status', $status_cc );
+                    update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
+                    update_post_meta( $order_id, 'reason', $reason );
+                    $order->update_status($this->status_cancelled);
+                    return;
                 } elseif ($status_nm_3ds == 2 || $status_nm_3ds == 22 || $status_nm_3ds == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
                     // Add a notice and link to go back to the previous checkout page
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
