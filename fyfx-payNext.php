@@ -1156,4 +1156,17 @@ function add_custom_script_to_footer() {
     <?php
 }
 
+// Tambahkan filter untuk mengubah pesan error checkout
+add_filter('woocommerce_add_error', 'custom_checkout_error_message', 10, 3);
+function custom_checkout_error_message($message, $error_code, $error) {
+
+    // Ganti pesan error sesuai kebutuhan Anda
+    if ($error_code === 'payment') {
+        $errorMessage = "We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.";
+        return $errorMessage;
+    }
+
+    return $message; // Kembalikan pesan asli jika tidak ada perubahan
+}
+
 ?>
