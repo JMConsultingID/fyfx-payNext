@@ -610,7 +610,7 @@ function woocommerce_paynext_init()
                 $results  = json_decode($response, true);
 
                 if (empty($results)){
-                    update_post_meta( $order_id, 'error_payment', 'failed - no response from paynext ' .$results ); 
+                    update_post_meta( $order_id, 'payment_status', 'failed - no response from paynext ' .$results );
                     update_post_meta( $order_id, 'reason', 'Max. transactions allowed within (1 days)' );                   
                     error_log('Payment API response error: Error Response Code : Empty Result - '. $results.'-'. $response);
                     wc_get_logger()->error('WC Payment API response error: Error Response Code : Empty Result - '. $results.'-'. $response);
@@ -630,7 +630,8 @@ function woocommerce_paynext_init()
                 $url_auth_url_2 = $results["authurl"];
 
                 if (empty($results["authurl"])){
-                    update_post_meta( $order_id, 'error_payment', 'failed - authurl is empty -  response from paynext ');                     
+                    update_post_meta( $order_id, 'payment_status', 'failed - authurl is empty - response from paynext : ' .$results );
+                    update_post_meta( $order_id, 'reason', 'authurl is empty' );                    
                     error_log('Payment API response error: No Response Auth URL' . print_r($results, true));
                     wc_get_logger()->error('Payment API response error: No Response Auth URL' . print_r($results, true));
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Empty Authurl</p>', 'fyfx-payNext')), 'error' );
