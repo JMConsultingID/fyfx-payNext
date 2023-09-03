@@ -627,7 +627,18 @@ function woocommerce_paynext_init()
                         $order->update_status($this->status_pending);
                         return;
                     }
-                }             
+                } else {
+                    // Handle empty response
+                    update_post_meta($order_id, 'payment_status', 'failed - empty response');
+                    update_post_meta($order_id, 'reason', 'Empty API response');
+                    error_log('Payment API response error: Empty Result');
+                    wc_get_logger()->error('WC Payment API result error: Empty Result');
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : '.$http_status_code.'.</p>')), 'error' );
+                    $order->update_status($this->status_pending);
+                    return;
+                }
+
+            
         
                 $status = $results["status"];
                 $response_encode = json_encode($results, true) . " || " . $response;
