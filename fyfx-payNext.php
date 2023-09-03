@@ -519,7 +519,7 @@ function woocommerce_paynext_init()
                 
                 
                 $the_currency               = get_woocommerce_currency();
-                $the_order_total            = @$order->order_total;
+                $the_order_total            = @$order->get_total();
                 
                 $gateway_url                =  implode('/', explode('/', $this->transaction_url, -1))."/directapi.do";
                 
@@ -541,18 +541,18 @@ function woocommerce_paynext_init()
                 //<!--billing details of .* customer -->
                 //$curlPost["ccholder"]       = $order->billing_first_name;
                 //$curlPost["ccholder_lname"] = $order->billing_last_name;
-                $billing_address_1=$order->billing_address_1;
+                $billing_address_1=$order->get_billing_address_1();
                 if(empty($billing_address_1)){$billing_address_1=$country;}
 
-                $curlPost["fullname"] = $order->billing_first_name. " " .$order->billing_last_name;
-                $curlPost["email"]          = $order->billing_email;
+                $curlPost["fullname"] = $order->get_billing_first_name(). " " .$order->$order->get_billing_last_name();
+                $curlPost["email"]          = $order->get_billing_email();
                 $curlPost["bill_street_1"]  = $billing_address_1;
                 $curlPost["bill_street_2"]  = $billing_address_1;
                 $curlPost["bill_city"]      = $country;
                 $curlPost["bill_state"]     = $country;
                 
                 
-                $billing_phone=$order->billing_phone;
+                $billing_phone=$order->get_billing_phone();
                 if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
                 
                 $curlPost["bill_country"]   = $country;
@@ -609,9 +609,15 @@ function woocommerce_paynext_init()
                 curl_close($curl);
                 $results  = json_decode($response, true);
             
-
                 if (isset($results['response']) && isset($results['response']['code']) && $results['response']['code'] == '200') {
                     $results = json_decode($results['body'], true);
+                } else {
+                    update_post_meta( $order_id, 'error_payment', $results );                    
+                    error_log('Payment API response error: ' . print_r($results, true));
+                    wc_get_logger()->error('Payment API response error: ' . print_r($results, true));
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
+                    $order->update_status($this->status_pending);
+                    return;
                 }
                 
                 $status = $results["status"];
@@ -812,7 +818,7 @@ function woocommerce_paynext_init()
                                 $transauthorised = true;
                                 $msg['message']  = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be shipping your order to you soon.";
                                 $msg['class']    = 'success';
-                                if ($order->status != 'processing') {
+                                if ($order->get_status() != 'processing') {
                                     $order->payment_complete();
                                     $order->update_status($this->status_completed);
                                        if(empty( $check_transaction_id)){
@@ -875,7 +881,7 @@ function woocommerce_paynext_init()
             $post_data = get_post_meta($order_id, '_post_data', true);
             update_post_meta($order_id, '_post_data', array());
             $the_currency    = get_woocommerce_currency();
-            $the_order_total = @$order->order_total;
+            $the_order_total = @$order->get_total();
             if ($this->paynext_type == 'host') {
                 $form = '';
                 wc_enqueue_js('
@@ -1131,4 +1137,15 @@ function add_custom_script_to_footer() {
 }
 
 add_action('wp_footer', 'add_custom_script_to_footer', 999);
+
+// Tambahkan filter untuk mengubah pesan error checkout
+add_filter('woocommerce_add_error', 'custom_checkout_error_message', 10, 2);
+function custom_checkout_error_message($message, $error) {
+    // Ganti pesan error sesuai kebutuhan Anda
+    if ($error === 'payment') {
+        $errorMessage = "We're sorry, but there was an error processing your request.";
+        return $errorMessage;
+    }
+    return $message; // Kembalikan pesan asli jika tidak ada perubahan
+}
 ?>
