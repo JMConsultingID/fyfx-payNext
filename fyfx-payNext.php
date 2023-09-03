@@ -544,7 +544,7 @@ function woocommerce_paynext_init()
                 $billing_address_1=$order->get_billing_address_1();
                 if(empty($billing_address_1)){$billing_address_1=$country;}
 
-                $curlPost["fullname"] = $order->get_billing_first_name(). " " .$order->$order->get_billing_last_name();
+                $curlPost["fullname"] = $order->get_billing_first_name(). " " .$order->get_billing_last_name();
                 $curlPost["email"]          = $order->get_billing_email();
                 $curlPost["bill_street_1"]  = $billing_address_1;
                 $curlPost["bill_street_2"]  = $billing_address_1;
@@ -607,7 +607,7 @@ function woocommerce_paynext_init()
                 curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
                 $response = curl_exec($curl);
                 curl_close($curl);
-                $results  = '';
+                $results  = [];
 
                 if (empty($results)){
                     update_post_meta( $order_id, 'error_payment', 'variable results is empty' );                    
