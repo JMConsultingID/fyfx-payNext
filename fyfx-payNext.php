@@ -632,7 +632,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'error_payment', 'authurl is empty' );                    
                     error_log('Payment API response error: ' . print_r($results, true));
                     wc_get_logger()->error('Payment API response error: ' . print_r($results, true));
-                    wc_add_notice( sprintf( __('03 We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Empty Authurl</p>', 'fyfx-payNext')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
