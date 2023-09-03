@@ -607,7 +607,7 @@ function woocommerce_paynext_init()
                 curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
                 $response = curl_exec($curl);
                 curl_close($curl);
-                $results  = [];
+                $results  = json_decode($response, true);
 
                 if (empty($results)){
                     update_post_meta( $order_id, 'error_payment', 'variable results is empty' );                    
