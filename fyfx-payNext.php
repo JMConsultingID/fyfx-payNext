@@ -615,7 +615,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'error_payment', $results );                    
                     error_log('Payment API response error: ' . print_r($results, true));
                     wc_get_logger()->error('Payment API response error: ' . print_r($results, true));
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
@@ -624,8 +624,19 @@ function woocommerce_paynext_init()
                 $response_encode = json_encode($results, true) . " || " . $response;
                 $status_nm = (int)($results["status_nm"]);
                 $sub_query = http_build_query($results);
+                $transaction_id = $results["transaction_id"];
+                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $api_token . "&transaction_id=" . $transaction_id;
                 $url_auth_url_1 = isset($results["authurl"]);
                 $url_auth_url_2 = $results["authurl"];
+
+                if (empty($results["authurl"])){
+                    update_post_meta( $order_id, 'error_payment', 'authurl is empty' );                    
+                    error_log('Payment API response error: ' . print_r($results, true));
+                    wc_get_logger()->error('Payment API response error: ' . print_r($results, true));
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
+                    $order->update_status($this->status_pending);
+                    return;
+                }
                      
               
                if(isset($results["authurl"]) && $results["authurl"]){ 
