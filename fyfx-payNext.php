@@ -608,6 +608,15 @@ function woocommerce_paynext_init()
                 $response = curl_exec($curl);
                 curl_close($curl);
                 $results  = [];
+
+                if (empty($results)){
+                    update_post_meta( $order_id, 'error_payment', 'variable results is empty' );                    
+                    error_log('Payment API response error: variable results is empty');
+                    wc_get_logger()->error('Payment API response error: variable results is empty');
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
+                    $order->update_status($this->status_pending);
+                    return;
+                }
             
                 if (isset($results['response']) && isset($results['response']['code']) && $results['response']['code'] == '200') {
                     $results = json_decode($results['body'], true);
