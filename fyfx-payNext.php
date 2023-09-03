@@ -613,15 +613,22 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'error_payment', 'variable results is empty' );                    
                     error_log('Payment API response error: variable results is empty');
                     wc_get_logger()->error('Payment API response error: variable results is empty');
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
+                    wc_add_notice( sprintf( __('01 We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
             
                 if (isset($results['response']) && isset($results['response']['code']) && $results['response']['code'] == '200') {
                     $results = json_decode($results['body'], true);
-                } 
-
+                } else {
+                    update_post_meta( $order_id, 'error_payment','empty response code body'  );                    
+                    error_log('Payment API response error: ' . print_r($results, true));
+                    wc_get_logger()->error('Payment API response error: ' . print_r($results, true));
+                    wc_add_notice( sprintf( __('02 We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
+                    $order->update_status($this->status_pending);
+                    return;
+                }
+                
                 $status = $results["status"];
                 $response_encode = json_encode($results, true) . " || " . $response;
                 $status_nm = (int)($results["status_nm"]);
@@ -630,12 +637,18 @@ function woocommerce_paynext_init()
                 $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $api_token . "&transaction_id=" . $transaction_id;
                 $url_auth_url_1 = isset($results["authurl"]);
                 $url_auth_url_2 = $results["authurl"];
+
+                if (empty($results["authurl"])){
+                    update_post_meta( $order_id, 'error_payment', 'authurl is empty' );                    
+                    error_log('Payment API response error: ' . print_r($results, true));
+                    wc_get_logger()->error('Payment API response error: ' . print_r($results, true));
+                    wc_add_notice( sprintf( __('03 We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
+                    $order->update_status($this->status_pending);
+                    return;
+                }
+                     
               
                if(isset($results["authurl"]) && $results["authurl"]){ 
-                    if (empty($results["authurl"])){
-                        $results["authurl"] = $authurl;
-                    }
-
                     $redirecturl = $results["authurl"];
                     
                     // Arguments for POST request - if you have specific data to post, add it in the 'body' key
