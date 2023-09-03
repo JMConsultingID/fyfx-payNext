@@ -609,21 +609,21 @@ function woocommerce_paynext_init()
                 curl_close($curl);
                 $results  = json_decode($response, true);
 
+                $response_encode =  json_encode( $results , true) . " || " . $response ; 
+                
                 if (!empty($results)) {
                 $http_status_code = wp_remote_retrieve_response_code($results);
                 $response_body = wp_remote_retrieve_body($results);
-
                     if ($http_status_code === 200) {
                         $results = json_decode($response_body, true);
-                        // Lanjutkan pengolahan data
                     } 
                 } else {
                     // Handle empty response
-                    update_post_meta($order_id, 'payment_status', 'failed - empty response');
-                    update_post_meta($order_id, 'reason', 'Empty API response');
-                    error_log('Payment API response error: Empty Result');
-                    wc_get_logger()->error('WC Payment API result error: Empty Result');
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : '.$response.'.</p>')), 'error' );
+                    update_post_meta($order_id, 'payment_status', 'failed - empty response '.$response_encode);
+                    update_post_meta($order_id, 'reason', 'Empty API response '.$response_encode);
+                    error_log('Payment API response error: Empty Result '.$response_encode);
+                    wc_get_logger()->error('WC Payment API result error: Empty Result '.$response_encode);
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : '.$response_encode.'.</p>')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
