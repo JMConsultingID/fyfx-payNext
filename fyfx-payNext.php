@@ -625,13 +625,12 @@ function woocommerce_paynext_init()
                 }
                 
 
-                if (empty($response)){
+                if (empty($results)){
                     update_post_meta( $order_id, 'payment_status', 'failed - no response from paynext ' .$results );
                     update_post_meta( $order_id, 'reason', 'Max. transactions allowed within (1 days)' );                   
-                    error_log('Payment API response error: Error Response Code : Empty Result - '. $results.'-'. $response .'-'.$error);
+                    error_log('Payment API response error: Error Response Code : Empty Result - '. $results);
                     wc_get_logger()->error('WC Payment API result error: Error Response Code : Empty Result - '. print_r($results, true));
-                    wc_get_logger()->error('WC Payment API response error: Error Response Code : Empty Result - '. print_r($response, true));
-                    wc_get_logger()->error('WC Payment API response error: Error Response Code : Empty Result - '. print_r($error, true));
+                    wc_get_logger()->error('WC Payment API response error: Error Response Code : Empty Result - '.$error);
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Max. transactions allowed within (1 days)</p>', 'fyfx-payNext')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
