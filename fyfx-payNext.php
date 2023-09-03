@@ -607,7 +607,7 @@ function woocommerce_paynext_init()
                 curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
                 $response = curl_exec($curl);
                 curl_close($curl);
-                $results  = json_decode($response, true);
+                $results  = [];
             
                 if (isset($results['response']) && isset($results['response']['code']) && $results['response']['code'] == '200') {
                     $results = json_decode($results['body'], true);
