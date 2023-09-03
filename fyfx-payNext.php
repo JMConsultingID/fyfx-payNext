@@ -649,9 +649,9 @@ function woocommerce_paynext_init()
                 if (!isset($results["authurl"]) && !$results["authurl"]){
                     update_post_meta( $order_id, 'payment_status', 'failed - authurl is empty - response from paynext : ' .$results );
                     update_post_meta( $order_id, 'reason', 'authurl is empty' );                    
-                    error_log('Payment API response error: No Response Auth URL' . print_r($results, true));
-                    wc_get_logger()->error('Payment API response error: No Response Auth URL' . print_r($results, true));
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Empty Authurl</p>', 'fyfx-payNext')), 'error' );
+                    error_log('Payment API response error code: No Response Auth URL' . print_r($results, true));
+                    wc_get_logger()->error('Payment API response error code: No Response Auth URL' . print_r($results, true));
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Card Declined</p>', 'fyfx-payNext')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
