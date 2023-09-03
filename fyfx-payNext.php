@@ -616,18 +616,18 @@ function woocommerce_paynext_init()
                     if ($http_status_code === 200) {
                         $results = json_decode($response_body, true);
                         // Lanjutkan pengolahan data
-                    } else {
-                        // Handle error response
-                        update_post_meta($order_id, 'payment_status', 'failed - error response');
-                        update_post_meta($order_id, 'reason', 'Payment API error');
-                        error_log('Payment API response error: HTTP Status Code ' . $http_status_code);
-                        wc_get_logger()->error('WC Payment API result error: HTTP Status Code ' . $http_status_code);
-                        wc_get_logger()->error('WC Payment API response error: ' . $response_body);
-                        wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : '.$http_status_code.'.</p>')), 'error' );
-                        $order->update_status($this->status_pending);
-                        return;
-                    }
+                    } 
+                } else {
+                    // Handle empty response
+                    update_post_meta($order_id, 'payment_status', 'failed - empty response');
+                    update_post_meta($order_id, 'reason', 'Empty API response');
+                    error_log('Payment API response error: Empty Result');
+                    wc_get_logger()->error('WC Payment API result error: Empty Result');
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : '.$http_status_code.'.</p>')), 'error' );
+                    $order->update_status($this->status_pending);
+                    return;
                 }
+
             
         
                 $status = $results["status"];
