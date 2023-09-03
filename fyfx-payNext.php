@@ -626,6 +626,7 @@ function woocommerce_paynext_init()
                 
 
                 if (empty($results)){
+                    wc_clear_notices();
                     update_post_meta( $order_id, 'payment_status', 'failed - no response from paynext ' .$results );
                     update_post_meta( $order_id, 'reason', 'Max. transactions allowed within (1 days)' );                   
                     error_log('Payment API response error: Error Response Code : Empty Result - '. $results);
@@ -647,6 +648,7 @@ function woocommerce_paynext_init()
                 $url_auth_url_2 = $results["authurl"];
 
                 if (!isset($results["authurl"]) && !$results["authurl"]){
+                    wc_clear_notices();
                     update_post_meta( $order_id, 'payment_status', 'failed - authurl is empty - response from paynext : ' .$results );
                     update_post_meta( $order_id, 'reason', 'authurl is empty' );                    
                     error_log('Payment API response error code: No Response Auth URL' . print_r($results, true));
