@@ -709,7 +709,7 @@ function woocommerce_paynext_init()
                 $reason = $responseArray["reason"];
 
            
-                if ($status_nm_3ds == 1 || $status_nm_3ds == 9) { // 1:Approved/Success, 9:Test Transaction
+                if ($status_nm_3ds == 1) { // 1:Approved/Success, 9:Test Transaction
                     $redirecturl = $curlPost["success_url"];
                     $order->payment_complete();
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
