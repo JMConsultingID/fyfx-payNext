@@ -601,7 +601,7 @@ function woocommerce_paynext_init()
                 curl_setopt($curl, CURLOPT_POST, 1);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPost);
                 curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
-                curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 20);
                 curl_setopt($curl, CURLOPT_HEADER, 0);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
@@ -610,9 +610,9 @@ function woocommerce_paynext_init()
                 $results  = json_decode($response, true);
 
                 if (empty($results)){
-                    update_post_meta( $order_id, 'error_payment', 'variable results is empty' );                    
+                    update_post_meta( $order_id, 'error_payment', 'variable results is empty ' .$results["Error"] );                    
                     error_log('Payment API response error: variable results is empty');
-                    wc_get_logger()->error('Payment API response error: variable results is empty');
+                    wc_get_logger()->error('Payment API response error: variable results is empty ' .$results["Error"]);
                     wc_add_notice( sprintf( __('01 We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
@@ -621,7 +621,7 @@ function woocommerce_paynext_init()
                 if (isset($results['response']) && isset($results['response']['code']) && $results['response']['code'] == '200') {
                     $results = json_decode($results['body'], true);
                 } else {
-                    update_post_meta( $order_id, 'error_payment','empty response code body'  );                    
+                    update_post_meta( $order_id, 'error_payment','empty response code body '.$results["Error"]  );                    
                     error_log('Payment API response error: ' . print_r($results, true));
                     wc_get_logger()->error('Payment API response error: ' . print_r($results, true));
                     wc_add_notice( sprintf( __('02 We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
