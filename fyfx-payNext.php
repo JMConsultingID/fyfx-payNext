@@ -647,7 +647,7 @@ function woocommerce_paynext_init()
                 $url_auth_url_1 = isset($results["authurl"]);
                 $url_auth_url_2 = $results["authurl"];
 
-                if (!isset($results["authurl"]) && !$results["authurl"]){
+                if (empty($results["authurl"]){
                     wc_clear_notices();
                     update_post_meta( $order_id, 'payment_status', 'failed - authurl is empty - response from paynext : ' .$results );
                     update_post_meta( $order_id, 'reason', 'authurl is empty' );                    
