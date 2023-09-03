@@ -1156,16 +1156,4 @@ function add_custom_script_to_footer() {
     <?php
 }
 
-add_action('wp_footer', 'add_custom_script_to_footer', 999);
-
-// Tambahkan filter untuk mengubah pesan error checkout
-add_filter('woocommerce_add_error', 'custom_checkout_error_message', 10, 2);
-function custom_checkout_error_message($message, $error) {
-    // Ganti pesan error sesuai kebutuhan Anda
-    if ($error === 'payment') {
-        $errorMessage = "We're sorry, but there was an error processing your request.";
-        return $errorMessage;
-    }
-    return $message; // Kembalikan pesan asli jika tidak ada perubahan
-}
 ?>
