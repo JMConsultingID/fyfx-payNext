@@ -740,7 +740,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'reason', $reason );
                     update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
                     update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 );                   
-                    update_post_meta( $order_id, 'payment_amount', $responseArray['amt'] );
+                    update_post_meta( $order_id, 'payment_amount', $responseArray['amount'] );
                     update_post_meta( $order_id, 'payment_currency', $responseArray['curr'] );
                     update_post_meta( $order_id, 'payment_date', $responseArray['tdate'] );
                     update_post_meta( $order_id, 'payment_descriptor', $responseArray['descriptor'] );                    
@@ -777,7 +777,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'reason', $reason );
                     update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
                     update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 ); 
-                    update_post_meta( $order_id, 'payment_amount', $responseArray['amt'] );
+                    update_post_meta( $order_id, 'payment_amount', $responseArray['amount'] );
                     update_post_meta( $order_id, 'payment_currency', $responseArray['curr'] );
                     update_post_meta( $order_id, 'payment_date', $responseArray['tdate'] );
                     update_post_meta( $order_id, 'payment_descriptor', $responseArray['descriptor'] );                    
@@ -799,7 +799,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'reason', $reason );
                     update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
                     update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 ); 
-                    update_post_meta( $order_id, 'payment_amount', $responseArray['amt'] );
+                    update_post_meta( $order_id, 'payment_amount', $responseArray['amount'] );
                     update_post_meta( $order_id, 'payment_currency', $responseArray['curr'] );
                     update_post_meta( $order_id, 'payment_date', $responseArray['tdate'] );
                     update_post_meta( $order_id, 'payment_descriptor', $responseArray['descriptor'] );                    
