@@ -716,7 +716,13 @@ function woocommerce_paynext_init()
                     }
                     
                     update_post_meta( $order_id, 'response_status', $error_3ds);
+                    wc_get_logger()->error('WC Payment API result error: error_3ds - '. $error_3ds);
+                    error_log('WC Payment API result error: error_3ds - '. $error_3ds);
                 } 
+
+                $sub_query_3ds_log = http_build_query($responseArray);
+                wc_get_logger()->error('WC Payment API result error: sub_query - '. $sub_query_3ds_log);
+                error_log('WC Payment API result error: sub_query - '. $sub_query_3ds_log);
 
 
                 $response_encode_3ds = json_encode($responseArray, true) . " || " . $response_body;
