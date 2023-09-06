@@ -127,10 +127,10 @@ function woocommerce_paynext_init()
           //  add_action('woocommerce_api_wc_tasaction_status', array(  $this, 'check_trasaction'));
             
             
-            add_action('woocommerce_api_wc_paynext', array(
-                $this,
-                'check_paynext_response'
-            ));
+            //add_action('woocommerce_api_wc_paynext', array(
+               // $this,
+                //'check_paynext_response'
+            //));
             
             add_action('valid-paynext-request', array(
                 $this,
@@ -519,7 +519,7 @@ function woocommerce_paynext_init()
                 
                 
                 $the_currency               = get_woocommerce_currency();
-                $the_order_total            = @$order->order_total;
+                $the_order_total            = @$order->get_total();
                 
                 $gateway_url                =  implode('/', explode('/', $this->transaction_url, -1))."/directapi.do";
                 
@@ -541,18 +541,18 @@ function woocommerce_paynext_init()
                 //<!--billing details of .* customer -->
                 //$curlPost["ccholder"]       = $order->billing_first_name;
                 //$curlPost["ccholder_lname"] = $order->billing_last_name;
-                $billing_address_1=$order->billing_address_1;
+                $billing_address_1=$order->get_billing_address_1();
                 if(empty($billing_address_1)){$billing_address_1=$country;}
 
-                $curlPost["fullname"] = $order->billing_first_name. " " .$order->billing_last_name;
-                $curlPost["email"]          = $order->billing_email;
+                $curlPost["fullname"] = $order->get_billing_first_name(). " " .$order->get_billing_last_name();
+                $curlPost["email"]          = $order->get_billing_email();
                 $curlPost["bill_street_1"]  = $billing_address_1;
                 $curlPost["bill_street_2"]  = $billing_address_1;
                 $curlPost["bill_city"]      = $country;
                 $curlPost["bill_state"]     = $country;
                 
                 
-                $billing_phone=$order->billing_phone;
+                $billing_phone=$order->get_billing_phone();
                 if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
                 
                 $curlPost["bill_country"]   = $country;
@@ -600,7 +600,7 @@ function woocommerce_paynext_init()
                 curl_setopt($curl, CURLOPT_REFERER, $referer);
                 curl_setopt($curl, CURLOPT_POST, 1);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPost);
-                curl_setopt($curl, CURLOPT_TIMEOUT, 300);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 200);
                 curl_setopt($curl, CURLOPT_HEADER, 0);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
@@ -608,25 +608,54 @@ function woocommerce_paynext_init()
                 curl_close($curl);
                 $results  = json_decode($response, true);
 
-                
-
-                if ( $results['response']['code'] == '200' ) {
-                    $results = json_decode( $results['body'], true );
+                $error="card declined";
+                if (isset( $results['Error'] ) || isset( $results['error'] ) || isset( $results['reason'] ) ) {                    
+                    if ( isset( $results['reason'] ) ){
+                        $error.=$results['reason']." <br/> ";
+                    }
+                    if ( isset( $results['Error'] ) ){
+                        $error.=$results['Error']." <br/> ";
+                    }
+                    if ( isset( $results['error'] ) ){
+                        $error.=$results['error']." <br/> ";
+                    }
+                    if ( isset( $results['descriptor'] ) && $results['descriptor'] && !$results['descriptor']=='N/A' ){
+                        $error.="Transaction Descriptor : ".$results['descriptor'];
+                    }
                 }
                 
-                if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>=')) {  //old version 
-                    
-                } else { // latest version 
-                    
-                }
-                
 
+                if (!$results){
+                    update_post_meta( $order_id, 'payment_status', 'failed - no response from paynext ' .$results );
+                    update_post_meta( $order_id, 'reason', 'Max. transactions allowed within (1 days)' );                   
+                    error_log('Payment API response error: Error Response Code : Empty Result - '. $results);
+                    wc_get_logger()->error('WC Payment API result error: Error Response Code : Empty Result - '. print_r($results, true));
+                    wc_get_logger()->error('WC Payment API response error: Error Response Code : Empty Result - '.$error);
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : CONNECTION_TIMEOUT</p>', 'fyfx-payNext')), 'error' );
+                    $order->update_status($this->status_pending);
+                    return;
+                }
+            
+        
                 $status = $results["status"];
                 $response_encode = json_encode($results, true) . " || " . $response;
                 $status_nm = (int)($results["status_nm"]);
                 $sub_query = http_build_query($results);
+                $transaction_id = $results["transaction_id"];
+                $authurl = "https://portal.online-epayment.com/authurl.do?api_token=" . $api_token . "&transaction_id=" . $transaction_id;
                 $url_auth_url_1 = isset($results["authurl"]);
                 $url_auth_url_2 = $results["authurl"];
+
+                if (!isset($results["authurl"])) {
+                    wc_clear_notices();
+                    update_post_meta( $order_id, 'payment_status', 'failed - authurl is empty - response from paynext : ' .$results );
+                    update_post_meta( $order_id, 'reason', 'authurl is empty' );                    
+                    error_log('Payment API response error code: No Response Auth URL' . print_r($results, true));
+                    wc_get_logger()->error('Payment API response error code: No Response Auth URL' . print_r($results, true));
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Card Declined</p>', 'fyfx-payNext')), 'error' );
+                    $order->update_status($this->status_pending);
+                    return;
+                }
                      
               
                if(isset($results["authurl"]) && $results["authurl"]){ 
@@ -635,7 +664,7 @@ function woocommerce_paynext_init()
                     // Arguments for POST request - if you have specific data to post, add it in the 'body' key
                     $args = array(
                         'method' => 'POST',
-                        'timeout' => 45,
+                        'timeout' => 100,
                         'redirection' => 5, // Maximum number of redirects
                         'httpversion' => '1.0',
                         'blocking' => true,
@@ -687,7 +716,13 @@ function woocommerce_paynext_init()
                     }
                     
                     update_post_meta( $order_id, 'response_status', $error_3ds);
+                    wc_get_logger()->error('WC Payment API result error: error_3ds - '. $error_3ds);
+                    error_log('WC Payment API result error: error_3ds - '. $error_3ds);
                 } 
+
+                $sub_query_3ds_log = http_build_query($responseArray);
+                wc_get_logger()->error('WC Payment API result error: sub_query - '. $sub_query_3ds_log);
+                error_log('WC Payment API result error: sub_query - '. $sub_query_3ds_log);
 
 
                 $response_encode_3ds = json_encode($responseArray, true) . " || " . $response_body;
@@ -700,7 +735,7 @@ function woocommerce_paynext_init()
                 $reason = $responseArray["reason"];
 
            
-                if ($status_nm_3ds == 1 || $status_nm_3ds == 9) { // 1:Approved/Success, 9:Test Transaction
+                if ($status_nm_3ds == 1) { // 1:Approved/Success, 9:Test Transaction
                     $redirecturl = $curlPost["success_url"];
                     $order->payment_complete();
                     update_post_meta( $order_id, 'transaction_id', $transaction_id );
@@ -711,7 +746,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'reason', $reason );
                     update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
                     update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 );                   
-                    update_post_meta( $order_id, 'payment_amount', $responseArray['amt'] );
+                    update_post_meta( $order_id, 'payment_amount', $responseArray['amount'] );
                     update_post_meta( $order_id, 'payment_currency', $responseArray['curr'] );
                     update_post_meta( $order_id, 'payment_date', $responseArray['tdate'] );
                     update_post_meta( $order_id, 'payment_descriptor', $responseArray['descriptor'] );                    
@@ -724,6 +759,17 @@ function woocommerce_paynext_init()
                         'redirect' => $this->get_return_url($order)
                     );                  
 
+                } elseif ($status_nm_3ds == 9) { // 9 = Test Payment
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Your Credit Card is Test Payment, Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
+                    $order->add_order_note('Payment Cancel - cError: Test Paymet Card');
+                    update_post_meta( $order_id, 'transaction_id', $transaction_id );
+                    update_post_meta( $order_id, 'payment_status', $status_cc );                    
+                    update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
+                    update_post_meta( $order_id, 'response_status', $status_cc );
+                    update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
+                    update_post_meta( $order_id, 'reason', $reason );
+                    $order->update_status($this->status_cancelled);
+                    return;
                 } elseif ($status_nm_3ds == 2 || $status_nm_3ds == 22 || $status_nm_3ds == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
                     // Add a notice and link to go back to the previous checkout page
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
@@ -737,7 +783,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'reason', $reason );
                     update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
                     update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 ); 
-                    update_post_meta( $order_id, 'payment_amount', $responseArray['amt'] );
+                    update_post_meta( $order_id, 'payment_amount', $responseArray['amount'] );
                     update_post_meta( $order_id, 'payment_currency', $responseArray['curr'] );
                     update_post_meta( $order_id, 'payment_date', $responseArray['tdate'] );
                     update_post_meta( $order_id, 'payment_descriptor', $responseArray['descriptor'] );                    
@@ -759,7 +805,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'reason', $reason );
                     update_post_meta( $order_id, 'auth_url_1', $url_auth_url_1 );
                     update_post_meta( $order_id, 'auth_url_2', $url_auth_url_2 ); 
-                    update_post_meta( $order_id, 'payment_amount', $responseArray['amt'] );
+                    update_post_meta( $order_id, 'payment_amount', $responseArray['amount'] );
                     update_post_meta( $order_id, 'payment_currency', $responseArray['curr'] );
                     update_post_meta( $order_id, 'payment_date', $responseArray['tdate'] );
                     update_post_meta( $order_id, 'payment_descriptor', $responseArray['descriptor'] );                    
@@ -819,7 +865,7 @@ function woocommerce_paynext_init()
                                 $transauthorised = true;
                                 $msg['message']  = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be shipping your order to you soon.";
                                 $msg['class']    = 'success';
-                                if ($order->status != 'processing') {
+                                if ($order->get_status() != 'processing') {
                                     $order->payment_complete();
                                     $order->update_status($this->status_completed);
                                        if(empty( $check_transaction_id)){
@@ -882,7 +928,7 @@ function woocommerce_paynext_init()
             $post_data = get_post_meta($order_id, '_post_data', true);
             update_post_meta($order_id, '_post_data', array());
             $the_currency    = get_woocommerce_currency();
-            $the_order_total = @$order->order_total;
+            $the_order_total = @$order->get_total();
             if ($this->paynext_type == 'host') {
                 $form = '';
                 wc_enqueue_js('
@@ -1137,5 +1183,4 @@ function add_custom_script_to_footer() {
     <?php
 }
 
-add_action('wp_footer', 'add_custom_script_to_footer', 999);
 ?>
