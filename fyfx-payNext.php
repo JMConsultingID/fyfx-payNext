@@ -600,7 +600,7 @@ function woocommerce_paynext_init()
                 curl_setopt($curl, CURLOPT_REFERER, $referer);
                 curl_setopt($curl, CURLOPT_POST, 1);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPost);
-                curl_setopt($curl, CURLOPT_TIMEOUT, 100);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 300);
                 curl_setopt($curl, CURLOPT_HEADER, 0);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($curl, CURLOPT_COOKIE, $curl_cookie);
@@ -664,7 +664,7 @@ function woocommerce_paynext_init()
                     // Arguments for POST request - if you have specific data to post, add it in the 'body' key
                     $args = array(
                         'method' => 'POST',
-                        'timeout' => 10,
+                        'timeout' => 100,
                         'redirection' => 5, // Maximum number of redirects
                         'httpversion' => '1.0',
                         'blocking' => true,
