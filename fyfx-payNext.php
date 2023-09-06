@@ -593,7 +593,7 @@ function woocommerce_paynext_init()
                 $curl_cookie                = "";
                 $args = array(
                     'method'      => 'POST',
-                    'timeout'     => 200,  // Response timeout
+                    'timeout'     => 100,  // Response timeout
                     'redirection' => 5,   // Number of allowed redirects
                     'httpversion' => '1.0',
                     'blocking'    => true,
@@ -734,6 +734,7 @@ function woocommerce_paynext_init()
                 } elseif ($status_nm_3ds == 9) { // 9 = Test Payment
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Your Credit Card is Test Payment, Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
                     $order->add_order_note('Payment Cancel - cError: Test Paymet Card');
+                    $order->add_order_note(__('<button id="'.$responseArray['transaction_id'].'" api="'.$responseArray['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
                     update_post_meta( $order_id, 'auth_transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'auth_url_3ds', $url_auth_url_2 );
                     update_post_meta( $order_id, 'payment_status', $status_cc );
@@ -1029,44 +1030,46 @@ function enqueue_custom_scripts() {
 }
 add_action('wp_enqueue_scripts', 'enqueue_custom_scripts');
 
-function check_paynext_transaction_status(){
+function check_paynext_transaction_status() {
+    $validateurl = get_option('woocommerce_paynext_settings', true);
 
+    $transaction_id = $_POST['tra_id'];
+    $url = implode('/', explode('/', $validateurl['transaction_url'], -1)) . "/validate.do";
 
-    $validateurl=get_option( 'woocommerce_paynext_settings', true );
+    $setPost = array(
+        'transaction_id' => $transaction_id,
+        'api_token' => $validateurl['api_token']
+    );
 
-    $transaction_id=$_POST['tra_id'];
-    //$url=$validateurl['validate_url']."?transaction_id=".$transaction_id;
-    $url=implode('/', explode('/', $validateurl['transaction_url'], -1))."/validate.do"."?transaction_id=".$transaction_id."&api_token=".$validateurl['api_token'];
-        
-        $setPost=array();
-        $setPost['transaction_id'] =  $transaction_id;
-        $setPost['api_token'] =  $validateurl['api_token'];
-        
-    
-        $ch = curl_init();
-        curl_setopt($ch,CURLOPT_URL, $url);
-        curl_setopt($ch,CURLOPT_POST,1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $setPost);
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false); 
-        curl_setopt($ch,CURLOPT_SSL_VERIFYHOST, false);
-        $response = curl_exec($ch);
-        curl_close($ch);
-        $json_response = json_decode($response,true);
-        
-        $htmlresponse="";
-        foreach($json_response as $key=>$data)
-        {
-            
-            $htmlresponse.="<br><b>".$key.":</b>".$data;  
-            
-            
+    $args = array(
+        'method' => 'POST',
+        'timeout' => 45,  // Response timeout. You can adjust this.
+        'redirection' => 5,   // Number of allowed redirects
+        'httpversion' => '1.0',
+        'blocking' => true,
+        'headers' => array(),
+        'body' => $setPost,  // Your POST data
+        'cookies' => array(),
+        'sslverify' => false  // Equivalent to CURLOPT_SSL_VERIFYPEER and CURLOPT_SSL_VERIFYHOST set to false
+    );
+
+    $response = wp_remote_post($url, $args);
+
+    if (is_wp_error($response)) {
+        $error_message = $response->get_error_message();
+        echo "Something went wrong: $error_message";
+    } else {
+        $json_response = json_decode(wp_remote_retrieve_body($response), true);
+
+        $htmlresponse = "";
+        foreach ($json_response as $key => $data) {
+            $htmlresponse .= "<br><b>" . $key . ":</b>" . $data;
         }
-    echo $htmlresponse;
+        echo $htmlresponse;
+    }
     exit;
-
-
 }
+
 
 // Function to trigger the 'before_page_content' action hook
 function add_notice_content_shortcode() {
