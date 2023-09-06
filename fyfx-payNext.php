@@ -609,9 +609,11 @@ function woocommerce_paynext_init()
 
                 if (is_wp_error($response)) {
                     $error_message = $response->get_error_message();
+                    wc_get_logger()->error("--New Response Error--");
                     wc_get_logger()->error("HTTP Request Error: " . $error_message);
                 } else {
                     $raw_response = wp_remote_retrieve_body($response);
+                    wc_get_logger()->info("--New Response Info--");
                     wc_get_logger()->info("Raw Response: " . $raw_response);
 
                     $status_code = wp_remote_retrieve_response_code($response);
@@ -673,11 +675,13 @@ function woocommerce_paynext_init()
                     // Check for errors
                     if (is_wp_error($response_auth)) {
                         $error_message = $response_auth->get_error_message();
+                        wc_get_logger()->error("--New Response Error - authurl--");
                         wc_get_logger()->error("HTTP Request Error - authurl: " . $error_message);
                         wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : CONNECTION_TIMEOUT</p>', 'fyfx-payNext')), 'error');
                         return; // Exit the function
                     } else {
                         $raw_response = wp_remote_retrieve_body($response_auth);
+                        wc_get_logger()->info("--New Response Info  - authurl--");
                         wc_get_logger()->info("Raw Response - authurl: " . $raw_response);
 
                         $status_code = wp_remote_retrieve_response_code($response_auth);
