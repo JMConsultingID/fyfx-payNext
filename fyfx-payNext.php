@@ -732,17 +732,22 @@ function woocommerce_paynext_init()
                     );                  
 
                 } elseif ($status_nm_3ds == 9) { // 9 = Test Payment
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Your Credit Card is Test Payment, Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
-                    $order->add_order_note('Payment Cancel - cError: Test Paymet Card');
-                    $order->add_order_note(__('<button id="'.$responseArray['transaction_id'].'" api="'.$responseArray['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));
+                    $redirecturl = $curlPost["success_url"];
+                    $order->payment_complete();
                     update_post_meta( $order_id, 'auth_transaction_id', $transaction_id );
                     update_post_meta( $order_id, 'auth_url_3ds', $url_auth_url_2 );
                     update_post_meta( $order_id, 'payment_status', $status_cc );
                     update_post_meta( $order_id, 'reason', $reason ); 
                     update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
                     update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );
-                    $order->update_status($this->status_cancelled);
-                    return;
+                    
+                    $order->add_order_note(__('<button id="'.$responseArray['transaction_id'].'" api="'.$responseArray['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));               
+                    // this is important part for empty cart
+                    $woocommerce->cart->empty_cart();  
+                    return array(
+                        'result' => 'success',
+                        'redirect' => $this->get_return_url($order)
+                    ); 
                 } elseif ($status_nm_3ds == 2 || $status_nm_3ds == 22 || $status_nm_3ds == 23) { // 2:Declined/Failed, 22:Expired, 23:Cancelled
                     // Add a notice and link to go back to the previous checkout page
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
