@@ -463,7 +463,7 @@ function woocommerce_paynext_init()
         {
             $logger = wc_get_logger();
             $context = array('source' => 'a-fyfx-paynext-log');
-            $logger->info('-----------------------', $context);
+            $logger->info('', $context);
             $logger->info('-----------------------', $context);
             $logger->info('-----FYFX-PAYNEXT------', $context);
             $logger->info('-----------------------', $context);
@@ -578,26 +578,33 @@ function woocommerce_paynext_init()
                 $response = wp_remote_post($gateway_url, $args);
 
                 if (is_wp_error($response)) {
-                    $error_message = $response->get_error_message();
+                    $error_message = $response->get_error_message() ?: 'no-error';
+                    $logger->info('', $context);
                     $logger->error("--New Response Error--", $context);
                     $logger->error("HTTP Request Error: " . $error_message, $context);
+                    $logger->error("--End Response Error--", $context);
                 } else {
                     $raw_response = wp_remote_retrieve_body($response);
+                    $logger->info('', $context);
                     $logger->info("--New Response Info--", $context);
                     $logger->info("Raw Response: " . $raw_response, $context);
+                     $logger->info("--End Response Info--", $context);
 
                     $status_code = wp_remote_retrieve_response_code($response, $context);
+                    $logger->info('', $context);
                     $logger->info("HTTP Status Code: " . $status_code, $context);
 
                     $results = json_decode($raw_response, true);
 
                     if (json_last_error() !== JSON_ERROR_NONE) {
+                        $logger->info('', $context);
                         $logger->error("JSON Decode Error: " . json_last_error_msg(), $context);
                     }
 
                     if (!$results) {
                         update_post_meta($order_id, 'payment_status', 'failed - no response from paynext ' . $results);
                         update_post_meta($order_id, 'reason', 'Max. transactions allowed within (1 days)');
+                        $logger->info('', $context);
                         $logger->error('WC Payment API result error: Error Response Code : Empty Result - ' . $raw_response, $context);
                         wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : CONNECTION_TIMEOUT</p>', 'fyfx-payNext')), 'error');
                         $order->update_status($this->status_pending);
@@ -617,6 +624,7 @@ function woocommerce_paynext_init()
                 if (!isset($results["authurl"])) {
                     update_post_meta( $order_id, 'payment_status', 'failed - authurl is empty - response from paynext : ' .$results );
                     update_post_meta( $order_id, 'reason', 'authurl is empty' );
+                    $logger->info('', $context);
                     $logger->error('Payment API response error code: No Response Auth URL' . print_r($results, true), $context);
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. please contact our customer support', 'fyfx-payNext')), 'error' );
                     $order->update_status($this->status_pending);
@@ -644,17 +652,22 @@ function woocommerce_paynext_init()
                     
                     // Check for errors
                     if (is_wp_error($response_auth)) {
-                        $error_message = $response_auth->get_error_message();
+                        $error_message = $response_auth->get_error_message() ?: 'no-error';
+                        $logger->info('', $context);
                         $logger->error("--New Response Error - authurl--", $context);
                         $logger->error("HTTP Request Error - authurl: " . $error_message, $context);
+                        $logger->error("--End Response Error - authurl--", $context);
                         wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : CONNECTION_TIMEOUT</p>', 'fyfx-payNext')), 'error');
                         return; // Exit the function
                     } else {
                         $raw_response = wp_remote_retrieve_body($response_auth);
+                        $logger->info('', $context);
                         $logger->info("--New Response Info  - authurl--", $context);
                         $logger->info("Raw Response - authurl: " . $raw_response, $context);
+                        $logger->error("--End Response Info  - authurl--", $context);
 
                         $status_code = wp_remote_retrieve_response_code($response_auth);
+                        $logger->info('', $context);
                         $logger->info("HTTP Status Code - authurl: " . $status_code, $context);
 
                         $responseArray = json_decode($raw_response, true);
@@ -718,12 +731,12 @@ function woocommerce_paynext_init()
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext'), $status_cc ), 'error' );
                     $order->add_order_note('Payment Cancel - cError log: ' . $response_encode_3ds );
                     $order->add_order_note(__('<button id="'.$responseArray['transaction_id'].'" api="'.$responseArray['api_token'].'" name="current-status" class="button-primary woocommerce-validate-current-status-paynext" type="button" value="Validate Current Status.">Validate Current Status.</button>', ''));                    
-                        update_post_meta( $order_id, 'auth_transaction_id', $transaction_id );
-                        update_post_meta( $order_id, 'auth_url_3ds', $url_auth_url_2 );
-                        update_post_meta( $order_id, 'payment_status', $status_cc );
-                        update_post_meta( $order_id, 'reason', $reason ); 
-                        update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
-                        update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );                  
+                    update_post_meta( $order_id, 'auth_transaction_id', $transaction_id );
+                    update_post_meta( $order_id, 'auth_url_3ds', $url_auth_url_2 );
+                    update_post_meta( $order_id, 'payment_status', $status_cc );
+                    update_post_meta( $order_id, 'reason', $reason ); 
+                    update_post_meta( $order_id, 'status_nm', $status_nm_3ds );
+                    update_post_meta( $order_id, 'sub_query_3ds', $sub_query_3ds );                  
                     update_post_meta( $order_id, 'fyfxaddress', $billing_address_1 );
                     $order->update_status($this->status_cancelled);
                     return;
