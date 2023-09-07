@@ -461,6 +461,13 @@ function woocommerce_paynext_init()
          **/
         function process_payment($order_id)
         {
+            $logger = wc_get_logger();
+            $context = array('source' => 'a-fyfx-paynext-log');
+            $logger->info('-----------------------', $context);
+            $logger->info('-----------------------', $context);
+            $logger->info('-----FYFX-PAYNEXT------', $context);
+            $logger->info('-----------------------', $context);
+            $logger->info('This is new info log entry.', $context);
             $order = new WC_Order($order_id);
             if ($this->paynext_type == 'card') {
                 $order_id = $order_id;
@@ -569,14 +576,6 @@ function woocommerce_paynext_init()
                 );
 
                 $response = wp_remote_post($gateway_url, $args);
-
-                $logger = wc_get_logger();
-                $context = array('source' => 'a-fyfx-paynext-log');
-                $logger->info('-----------------------', $context);
-                $logger->info('-----------------------', $context);
-                $logger->info('-----------------------', $context);
-                $logger->info('This is new info log entry.', $context);
-
 
                 if (is_wp_error($response)) {
                     $error_message = $response->get_error_message();
