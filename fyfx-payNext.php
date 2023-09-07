@@ -572,31 +572,34 @@ function woocommerce_paynext_init()
 
                 $logger = wc_get_logger();
                 $context = array('source' => 'a-fyfx-paynext-log');
-                $logger->info('This is an info log entry.', $context);
+                $logger->info('-----------------------', $context);
+                $logger->info('-----------------------', $context);
+                $logger->info('-----------------------', $context);
+                $logger->info('This is new info log entry.', $context);
 
 
                 if (is_wp_error($response)) {
                     $error_message = $response->get_error_message();
-                    wc_get_logger()->error("--New Response Error--");
-                    wc_get_logger()->error("HTTP Request Error: " . $error_message);
+                    $logger->error("--New Response Error--", $context);
+                    $logger->error("HTTP Request Error: " . $error_message, $context);
                 } else {
                     $raw_response = wp_remote_retrieve_body($response);
-                    wc_get_logger()->info("--New Response Info--");
-                    wc_get_logger()->info("Raw Response: " . $raw_response);
+                    $logger->info("--New Response Info--", $context);
+                    $logger->info("Raw Response: " . $raw_response, $context);
 
-                    $status_code = wp_remote_retrieve_response_code($response);
-                    wc_get_logger()->info("HTTP Status Code: " . $status_code);
+                    $status_code = wp_remote_retrieve_response_code($response, $context);
+                    $logger->info("HTTP Status Code: " . $status_code, $context);
 
                     $results = json_decode($raw_response, true);
 
                     if (json_last_error() !== JSON_ERROR_NONE) {
-                        wc_get_logger()->error("JSON Decode Error: " . json_last_error_msg());
+                        $logger->error("JSON Decode Error: " . json_last_error_msg(), $context);
                     }
 
                     if (!$results) {
                         update_post_meta($order_id, 'payment_status', 'failed - no response from paynext ' . $results);
                         update_post_meta($order_id, 'reason', 'Max. transactions allowed within (1 days)');
-                        wc_get_logger()->error('WC Payment API result error: Error Response Code : Empty Result - ' . $raw_response);
+                        $logger->error('WC Payment API result error: Error Response Code : Empty Result - ' . $raw_response, $context);
                         wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : CONNECTION_TIMEOUT</p>', 'fyfx-payNext')), 'error');
                         $order->update_status($this->status_pending);
                         return;
@@ -615,7 +618,7 @@ function woocommerce_paynext_init()
                 if (!isset($results["authurl"])) {
                     update_post_meta( $order_id, 'payment_status', 'failed - authurl is empty - response from paynext : ' .$results );
                     update_post_meta( $order_id, 'reason', 'authurl is empty' );
-                    wc_get_logger()->error('Payment API response error code: No Response Auth URL' . print_r($results, true));
+                    $logger->error('Payment API response error code: No Response Auth URL' . print_r($results, true), $context);
                     wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. please contact our customer support', 'fyfx-payNext')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
@@ -643,26 +646,26 @@ function woocommerce_paynext_init()
                     // Check for errors
                     if (is_wp_error($response_auth)) {
                         $error_message = $response_auth->get_error_message();
-                        wc_get_logger()->error("--New Response Error - authurl--");
-                        wc_get_logger()->error("HTTP Request Error - authurl: " . $error_message);
+                        $logger->error("--New Response Error - authurl--", $context);
+                        $logger->error("HTTP Request Error - authurl: " . $error_message, $context);
                         wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : CONNECTION_TIMEOUT</p>', 'fyfx-payNext')), 'error');
                         return; // Exit the function
                     } else {
                         $raw_response = wp_remote_retrieve_body($response_auth);
-                        wc_get_logger()->info("--New Response Info  - authurl--");
-                        wc_get_logger()->info("Raw Response - authurl: " . $raw_response);
+                        $logger->info("--New Response Info  - authurl--", $context);
+                        $logger->info("Raw Response - authurl: " . $raw_response, $context);
 
                         $status_code = wp_remote_retrieve_response_code($response_auth);
-                        wc_get_logger()->info("HTTP Status Code - authurl: " . $status_code);
+                        $logger->info("HTTP Status Code - authurl: " . $status_code, $context);
 
                         $responseArray = json_decode($raw_response, true);
 
                         if (json_last_error() !== JSON_ERROR_NONE) {
-                            wc_get_logger()->error("JSON Decode Error - authurl: " . json_last_error_msg());
+                            $logger->error("JSON Decode Error - authurl: " . json_last_error_msg(), $context);
                             wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : JSON_DECODE_ERROR</p>', 'fyfx-payNext')), 'error');
                             return; // Exit the function
                         } elseif (!$responseArray) {
-                            wc_get_logger()->error('WC Payment API result error - authurl: Error Response Code : Empty Result - ' . print_r($responseArray, true));
+                            $logger->error('WC Payment API result error - authurl: Error Response Code : Empty Result - ' . print_r($responseArray, true), $context);
                             wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : EMPTY_RESPONSE</p>', 'fyfx-payNext')), 'error');
                             return; // Exit the function
                         } else {
