@@ -626,7 +626,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'reason', 'authurl is empty' );
                     $logger->info('', $context);
                     $logger->error('Payment API response error code: No Response Auth URL' . print_r($results, true), $context);
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. please contact our customer support', 'fyfx-payNext')), 'error' );
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
@@ -674,7 +674,7 @@ function woocommerce_paynext_init()
 
                         if (json_last_error() !== JSON_ERROR_NONE) {
                             $logger->error("JSON Decode Error - authurl: " . json_last_error_msg(), $context);
-                            wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : JSON_DECODE_ERROR</p>', 'fyfx-payNext')), 'error');
+                            wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Payment Declined (JSON Decode Error)</p>', 'fyfx-payNext')), 'error');
                             return; // Exit the function
                         } elseif (!$responseArray) {
                             $logger->error('WC Payment API result error - authurl: Error Response Code : Empty Result - ' . print_r($responseArray, true), $context);
