@@ -606,7 +606,7 @@ function woocommerce_paynext_init()
                         update_post_meta($order_id, 'reason', 'Max. transactions allowed within (1 days)');
                         $logger->info('', $context);
                         $logger->error('WC Payment API result error: Error Response Code : Empty Result - ' . $raw_response, $context);
-                        wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : CONNECTION_TIMEOUT</p>', 'fyfx-payNext')), 'error');
+                        wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Payment Declined (ReCT)</p>', 'fyfx-payNext')), 'error');
                         $order->update_status($this->status_pending);
                         return;
                     }
@@ -626,7 +626,7 @@ function woocommerce_paynext_init()
                     update_post_meta( $order_id, 'reason', 'authurl is empty' );
                     $logger->info('', $context);
                     $logger->error('Payment API response error code: No Response Auth URL' . print_r($results, true), $context);
-                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.', 'fyfx-payNext')), 'error' );
+                    wc_add_notice( sprintf( __('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase.<p>Code : Payment Declined (ANR)</p>', 'fyfx-payNext')), 'error' );
                     $order->update_status($this->status_pending);
                     return;
                 }
@@ -657,7 +657,7 @@ function woocommerce_paynext_init()
                         $logger->error("--New Response Error - authurl--", $context);
                         $logger->error("HTTP Request Error - authurl: " . $error_message, $context);
                         $logger->error("--End Response Error - authurl--", $context);
-                        wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : CONNECTION_TIMEOUT</p>', 'fyfx-payNext')), 'error');
+                        wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Payment Declined (CT)</p>', 'fyfx-payNext')), 'error');
                         return; // Exit the function
                     } else {
                         $raw_response = wp_remote_retrieve_body($response_auth);
@@ -674,11 +674,11 @@ function woocommerce_paynext_init()
 
                         if (json_last_error() !== JSON_ERROR_NONE) {
                             $logger->error("JSON Decode Error - authurl: " . json_last_error_msg(), $context);
-                            wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Payment Declined (JSON Decode Error)</p>', 'fyfx-payNext')), 'error');
+                            wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Payment Declined (JDE)</p>', 'fyfx-payNext')), 'error');
                             return; // Exit the function
                         } elseif (!$responseArray) {
                             $logger->error('WC Payment API result error - authurl: Error Response Code : Empty Result - ' . print_r($responseArray, true), $context);
-                            wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : EMPTY_RESPONSE</p>', 'fyfx-payNext')), 'error');
+                            wc_add_notice(sprintf(__('We’re sorry, but your payment attempt was unsuccessful. Please consider using an alternative payment method to complete your purchase. <p>Code : Payment Declined (ER)</p>', 'fyfx-payNext')), 'error');
                             return; // Exit the function
                         } else {
                             update_post_meta($order_id, 'auth_url', $redirecturl);
