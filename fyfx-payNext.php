@@ -7,17 +7,17 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              https://fundyourfx.com
+ * @link              https://yourpropfirm.com/
  * @since             1.0.0
  * @package           Fyfx_PayNext
  *
  * @wordpress-plugin
  * Plugin Name:       PayNext Plugin - Gateway WooCommerce
- * Plugin URI:        https://fundyourfx.com
+ * Plugin URI:        https://yourpropfirm.com/
  * Description:       PayNext Plugin - Gateway WooCommerce
  * Version:           1.2.5
- * Author:            Ardi JM (Editor) | Original By PayNext 
- * Author URI:        https://fundyourfx.com
+ * Author:            Ardi JM | Original By PayNext 
+ * Author URI:        https://yourpropfirm.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       fyfx-payNext
@@ -56,7 +56,7 @@ function fyfx_paynext_check_requirements() {
 */
 function fyfx_paynext_missing_wc_notice() { 
     $class = 'notice notice-error';
-    $message = __( 'FYFX Propfirm User requires WooCommerce to be installed and active.', 'fyfx-propfirm-user' );
+    $message = __( 'PayNext Plugin Need WooCommerce to be installed and active.', 'fyfx-propfirm-user' );
  
     printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $message ) ); 
 }
@@ -90,8 +90,8 @@ function woocommerce_paynext_init()
         {
             // Go wild in here
             $this->id           = 'paynext';
-            $this->method_title = __('FYFX x PayNext Gateway');
-            $this->method_description = __('FYFX Plugin Payment Woocomerce using API payNext Gateway');
+            $this->method_title = __('PayNext Gateway');
+            $this->method_description = __('Paynext Plugin Payment Woocomerce using API payNext Gateway');
             $this->has_fields   = true;
             $this->init_form_fields();
             $this->init_settings();
@@ -462,10 +462,10 @@ function woocommerce_paynext_init()
         function process_payment($order_id)
         {
             $logger = wc_get_logger();
-            $context = array('source' => 'a-fyfx-paynext-log');
+            $context = array('source' => 'a-LOG-PAYNEXT-log');
             $logger->info('', $context);
             $logger->info('-----------------------', $context);
-            $logger->info('-----FYFX-PAYNEXT------', $context);
+            $logger->info('-----LOG-PAYNEXT------', $context);
             $logger->info('-----------------------', $context);
             $logger->info('This is new info log entry.', $context);
             $order = new WC_Order($order_id);
