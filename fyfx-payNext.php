@@ -525,9 +525,9 @@ function woocommerce_paynext_init()
                 $billing_phone=$order->get_billing_phone();
                 if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
                 
-                $curlPost["bill_country"]   = $country;
+                $curlPost["bill_country"]   = $order->get_billing_country();
                 $curlPost["bill_zip"]       = $order->get_billing_postcode();
-                $curlPost["bill_phone"]     = $billing_phone;
+                $curlPost["bill_phone"]     = $order->get_billing_phone();
                 $curlPost["id_order"]       = $order_id;
 
 
