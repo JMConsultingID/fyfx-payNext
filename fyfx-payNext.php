@@ -1129,4 +1129,60 @@ function add_custom_script_to_footer() {
     <?php
 }
 
+/**
+ * Add or modify States
+ */
+add_filter( 'woocommerce_states', 'custom_woocommerce_states' );
+function custom_woocommerce_states( $states ) {
+  $states['JP'] = array(
+        'HK' => 'Hokkaido',
+        'AO' => 'Aomori',
+        'IW' => 'Iwate',
+        'MY' => 'Miyagi',
+        'AK' => 'Akita',
+        'YM' => 'Yamagata',
+        'FK' => 'Fukushima',
+        'IB' => 'Ibaragi',
+        'TC' => 'Tochigi',
+        'GU' => 'Gunma',
+        'SI' => 'Saitama',
+        'CB' => 'Chiba',
+        'TK' => 'Tokyo',
+        'KN' => 'Kanagawa',
+        'NI' => 'Niigata',
+        'TY' => 'Toyama',
+        'IS' => 'Ishikawa',
+        'FI' => 'Fukui',
+        'YN' => 'Yamanashi',
+        'NG' => 'Nagano',
+        'GF' => 'Gifu',
+        'SZ' => 'Shizuoka',
+        'AI' => 'Aichi',
+        'ME' => 'Mie',
+        'SG' => 'Shiga',
+        'KT' => 'Kyoto',
+        'OS' => 'Osaka',
+        'HG' => 'Hyogo',
+        'NR' => 'Nara',
+        'WK' => 'Wakayama',
+        'TT' => 'Tottori',
+        'SM' => 'Shimane',
+        'OK' => 'Okayama',
+        'HR' => 'Hiroshima',
+        'YG' => 'Yamaguchi',
+        'TS' => 'Tokushima',
+        'KG' => 'Kagawa',
+        'EH' => 'Ehime',
+        'KC' => 'Kouchi',
+        'FO' => 'Fukuoka',
+        'SA' => 'Saga',
+        'NS' => 'Nagasaki',
+        'KM' => 'Kumamoto',
+        'OI' => 'Ooita',
+        'MZ' => 'Miyazaki',
+        'KS' => 'Kagoshima'
+    );
+  return $states;
+}
+
 ?>
