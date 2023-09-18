@@ -15,7 +15,7 @@
  * Plugin Name:       A - FYFX x PayNext Gateway WooCommerce
  * Plugin URI:        https://fundyourfx.com
  * Description:       FYFX x PayNext Payment Gateway for WooCommerce
- * Version:           1.2.0
+ * Version:           1.2.5
  * Author:            Ardi JM (Editor) | Original By PayNext 
  * Author URI:        https://fundyourfx.com
  * License:           GPL-2.0+
@@ -518,16 +518,16 @@ function woocommerce_paynext_init()
                 $curlPost["email"]          = $order->get_billing_email();
                 $curlPost["bill_street_1"]  = $billing_address_1;
                 $curlPost["bill_street_2"]  = $billing_address_1;
-                $curlPost["bill_city"]      = $country;
-                $curlPost["bill_state"]     = $country;
+                $curlPost["bill_city"]      = $order->get_billing_city();
+                $curlPost["bill_state"]     = $order->get_billing_state();
                 
                 
                 $billing_phone=$order->get_billing_phone();
                 if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
                 
-                $curlPost["bill_country"]   = $country;
-                $curlPost["bill_zip"]       = "0000";
-                $curlPost["bill_phone"]     = $billing_phone;
+                $curlPost["bill_country"]   = $order->get_billing_country();
+                $curlPost["bill_zip"]       = $order->get_billing_postcode();
+                $curlPost["bill_phone"]     = $order->get_billing_phone();
                 $curlPost["id_order"]       = $order_id;
 
 
@@ -1127,6 +1127,62 @@ function add_custom_script_to_footer() {
     });
     </script>
     <?php
+}
+
+/**
+ * Add or modify States
+ */
+add_filter( 'woocommerce_states', 'custom_woocommerce_states' );
+function custom_woocommerce_states( $states ) {
+  $states['JP'] = array(
+        'HK' => 'Hokkaido',
+        'AO' => 'Aomori',
+        'IW' => 'Iwate',
+        'MY' => 'Miyagi',
+        'AK' => 'Akita',
+        'YM' => 'Yamagata',
+        'FK' => 'Fukushima',
+        'IB' => 'Ibaragi',
+        'TC' => 'Tochigi',
+        'GU' => 'Gunma',
+        'SI' => 'Saitama',
+        'CB' => 'Chiba',
+        'TK' => 'Tokyo',
+        'KN' => 'Kanagawa',
+        'NI' => 'Niigata',
+        'TY' => 'Toyama',
+        'IS' => 'Ishikawa',
+        'FI' => 'Fukui',
+        'YN' => 'Yamanashi',
+        'NG' => 'Nagano',
+        'GF' => 'Gifu',
+        'SZ' => 'Shizuoka',
+        'AI' => 'Aichi',
+        'ME' => 'Mie',
+        'SG' => 'Shiga',
+        'KT' => 'Kyoto',
+        'OS' => 'Osaka',
+        'HG' => 'Hyogo',
+        'NR' => 'Nara',
+        'WK' => 'Wakayama',
+        'TT' => 'Tottori',
+        'SM' => 'Shimane',
+        'OK' => 'Okayama',
+        'HR' => 'Hiroshima',
+        'YG' => 'Yamaguchi',
+        'TS' => 'Tokushima',
+        'KG' => 'Kagawa',
+        'EH' => 'Ehime',
+        'KC' => 'Kouchi',
+        'FO' => 'Fukuoka',
+        'SA' => 'Saga',
+        'NS' => 'Nagasaki',
+        'KM' => 'Kumamoto',
+        'OI' => 'Ooita',
+        'MZ' => 'Miyazaki',
+        'KS' => 'Kagoshima'
+    );
+  return $states;
 }
 
 ?>
