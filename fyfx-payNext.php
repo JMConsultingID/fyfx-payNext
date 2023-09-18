@@ -15,7 +15,7 @@
  * Plugin Name:       A - FYFX x PayNext Gateway WooCommerce
  * Plugin URI:        https://fundyourfx.com
  * Description:       FYFX x PayNext Payment Gateway for WooCommerce
- * Version:           1.2.4
+ * Version:           1.2.5
  * Author:            Ardi JM (Editor) | Original By PayNext 
  * Author URI:        https://fundyourfx.com
  * License:           GPL-2.0+
@@ -518,15 +518,15 @@ function woocommerce_paynext_init()
                 $curlPost["email"]          = $order->get_billing_email();
                 $curlPost["bill_street_1"]  = $billing_address_1;
                 $curlPost["bill_street_2"]  = $billing_address_1;
-                $curlPost["bill_city"]      = $country;
-                $curlPost["bill_state"]     = $country;
+                $curlPost["bill_city"]      = $order->get_billing_city();
+                $curlPost["bill_state"]     = $order->get_billing_state();
                 
                 
                 $billing_phone=$order->get_billing_phone();
                 if(empty($billing_phone)){$billing_phone="8".rand(100000000,999999999);}
                 
                 $curlPost["bill_country"]   = $country;
-                $curlPost["bill_zip"]       = "0000";
+                $curlPost["bill_zip"]       = $order->get_billing_postcode();
                 $curlPost["bill_phone"]     = $billing_phone;
                 $curlPost["id_order"]       = $order_id;
 
