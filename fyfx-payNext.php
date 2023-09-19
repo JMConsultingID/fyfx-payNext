@@ -15,7 +15,7 @@
  * Plugin Name:       A - FYFX x PayNext Gateway WooCommerce
  * Plugin URI:        https://fundyourfx.com
  * Description:       FYFX x PayNext Payment Gateway for WooCommerce
- * Version:           1.2.5
+ * Version:           1.2.6
  * Author:            Ardi JM (Editor) | Original By PayNext 
  * Author URI:        https://fundyourfx.com
  * License:           GPL-2.0+
